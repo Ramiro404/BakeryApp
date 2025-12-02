@@ -3,6 +3,7 @@ package com.ramir.bakeryapp.data.database.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.ramir.bakeryapp.domain.model.Dessert
 import java.math.BigDecimal
 
 
@@ -15,3 +16,5 @@ data class DessertEntity(
     @ColumnInfo(name = "unit_available") val unitAvailable: Int = 0,
     @ColumnInfo(name = "price") val price: BigDecimal = BigDecimal("0.00")
 )
+
+fun Dessert.toEntity() = DessertEntity(id, name, description, unitAvailable,  price)

@@ -1,0 +1,60 @@
+package com.ramir.bakeryapp.ui.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.ramir.bakeryapp.domain.dessert.GetAllDessertsUseCase
+import com.ramir.bakeryapp.domain.dessert.GetDessertByIdUseCase
+import com.ramir.bakeryapp.domain.dessert.PostNewDessertUseCase
+import com.ramir.bakeryapp.domain.model.Dessert
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.math.BigDecimal
+
+@HiltViewModel
+class DessertViewModel @Inject constructor(
+    private val getAllDessertsUseCase: GetAllDessertsUseCase,
+    private val postNewDessertUseCase: PostNewDessertUseCase,
+    private val getDessertByIdUseCase: GetDessertByIdUseCase
+): ViewModel() {
+    private val _dessertList = MutableStateFlow<List<Dessert>>(emptyList())
+    val dessertList: Flow<List<Dessert>> = _dessertList.asStateFlow()
+
+    private val _dessert = MutableStateFlow<Dessert?>(null)
+    val dessert: Flow<Dessert?> = _dessert.asStateFlow()
+
+
+
+    fun saveNewDessert(name:String, description:String, unitAvailable:Int, price: BigDecimal){
+        val dessert = Dessert(name= name, description= description, unitAvailable =  unitAvailable, price = price )
+        viewModelScope.launch{
+            postNewDessertUseCase(dessert = dessert)
+
+        }
+
+
+    }
+
+    fun getDessertList(){
+        viewModelScope.launch {
+            _dessertList.update {
+                getAllDessertsUseCase()
+            }
+            //_dessertList.value = getAllDessertsUseCase()
+        }
+    }
+
+    fun getDessertById(id: Int){
+        viewModelScope.launch {
+            _dessert.update {
+                getDessertByIdUseCase(id)
+            }
+        }
+    }
+
+
+}

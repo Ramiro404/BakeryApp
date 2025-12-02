@@ -31,4 +31,22 @@ object RoomModule {
     @Singleton
     @Provides
     fun provideOrderDao(db: BakeryDatabase) = db.getOrderDao()
+
+    @Singleton
+    @Provides
+    fun provideOrderDessertDao(db: BakeryDatabase) = db.getOrderDessertDao()
+
+    @Singleton
+    @Provides
+    fun provideCustomerDao(db: BakeryDatabase) = db.getCustomerDao()
+
+    @Singleton
+    @Provides
+    fun provideDessertAdditionalIngredientDao(db: BakeryDatabase) = db.getDessertAdditionalIngredientDao()
+
+    @Singleton
+    @Provides
+    fun provideAdditionalIngredientDao(db: BakeryDatabase) = db.getAdditionalIngredientDao()
+
+
 }

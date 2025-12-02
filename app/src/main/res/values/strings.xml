@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">BakeryApp</string>
+    <string name="add_new_dessert">Agregar nuevo postre</string>
+    <string name="edit_dessert">Agregar/Remover inventario</string>
+    <string name="list_desserts">Ver postres</string>
+    <string name="delete_dessert">Eliminar un postre</string>
 </resources>

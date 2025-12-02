@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.ramir.bakeryapp"
-        minSdk = 26
+        minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -52,6 +52,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+
+    //kapt("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.8.0")
 
     implementation(libs.dagger.hilt)
     implementation(libs.dagger.hilt.navigation)
