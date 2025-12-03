@@ -21,8 +21,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             BakeryAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    BakeryAppTheme() {
-                        NavigationWrapper()
+                    BakeryAppTheme(
+
+                    ) {
+                        NavigationWrapper(Modifier.padding(innerPadding))
                     }
                 }
             }

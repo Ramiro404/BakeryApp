@@ -27,7 +27,9 @@ class DessertViewModel @Inject constructor(
     private val _dessert = MutableStateFlow<Dessert?>(null)
     val dessert: Flow<Dessert?> = _dessert.asStateFlow()
 
-
+    init {
+        getDessertList()
+    }
 
     fun saveNewDessert(name:String, description:String, unitAvailable:Int, price: BigDecimal){
         val dessert = Dessert(name= name, description= description, unitAvailable =  unitAvailable, price = price )
@@ -36,7 +38,6 @@ class DessertViewModel @Inject constructor(
 
         }
 
-
     }
 
     fun getDessertList(){
@@ -44,7 +45,6 @@ class DessertViewModel @Inject constructor(
             _dessertList.update {
                 getAllDessertsUseCase()
             }
-            //_dessertList.value = getAllDessertsUseCase()
         }
     }
 
@@ -55,6 +55,4 @@ class DessertViewModel @Inject constructor(
             }
         }
     }
-
-
 }

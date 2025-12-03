@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +34,9 @@ fun EditDessertFormScreen(
     dessertId:String =""){
 
     val dessertState by dessertViewModel.dessert.collectAsStateWithLifecycle(initialValue = null)
-    dessertViewModel.getDessertById(dessertId.toInt())
+    LaunchedEffect(Unit) {
+        dessertViewModel.getDessertById(dessertId.toInt())
+    }
 
     val nameState = remember { mutableStateOf(dessertState?.name ?: "") }
     val  descriptionState = remember { mutableStateOf(dessertState?.description ?: "") }
@@ -56,6 +59,7 @@ fun EditDessertFormScreen(
                 onValueChange = { descriptionState.value = it },
                 label = { Text(text = "Descripcion del postre") }
             )
+
 
             OutlinedTextField(
                 value = unitAvailableState.intValue.toString(),

@@ -1,6 +1,7 @@
 package com.ramir.bakeryapp.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,7 +12,7 @@ import com.ramir.bakeryapp.ui.view.EditDessertFormScreen
 import com.ramir.bakeryapp.ui.view.EditDessertScreen
 
 @Composable
-fun NavigationWrapper(){
+fun NavigationWrapper(modifier: Modifier = Modifier){
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = NavDestination.CreateNewDessert){
@@ -37,7 +38,7 @@ fun NavigationWrapper(){
         ){ backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")
             if(id != null){
-                EditDessertFormScreen(id)
+                EditDessertFormScreen(dessertId = id)
             }else{
 
             }
