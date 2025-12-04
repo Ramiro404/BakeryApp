@@ -62,6 +62,7 @@ dependencies {
 
     val room_version = "2.8.4"
     implementation("androidx.room:room-runtime:${room_version}")
+    kapt("androidx.room:room-compiler:${room_version}")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 class AdditionalIngredientViewModel @Inject constructor(
     private val getAllIAdditionalngredientsUseCase: GetAllIAdditionalngredientsUseCase,
@@ -30,6 +31,13 @@ class AdditionalIngredientViewModel @Inject constructor(
             _additionalIngredientList.update {
                 getAllIAdditionalngredientsUseCase()
             }
+        }
+    }
+
+    fun postIngredient(name:String, description:String, unitAvailable:Int, price: BigDecimal){
+        val ingredient = AdditionalIngredient(name=name, description=description, unitAvailable=unitAvailable, price=price)
+        viewModelScope.launch {
+            postNewAdditionalIngredient(ingredient)
         }
     }
 }

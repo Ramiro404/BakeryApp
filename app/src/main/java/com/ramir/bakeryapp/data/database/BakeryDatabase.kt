@@ -2,6 +2,7 @@ package com.ramir.bakeryapp.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.ramir.bakeryapp.data.database.dao.AdditionalIngredientDao
 import com.ramir.bakeryapp.data.database.dao.CustomerDao
 import com.ramir.bakeryapp.data.database.dao.DessertAdditionalIngredientDao
@@ -14,12 +15,16 @@ import com.ramir.bakeryapp.data.database.entities.DessertAdditionalIngredientEnt
 import com.ramir.bakeryapp.data.database.entities.DessertEntity
 import com.ramir.bakeryapp.data.database.entities.OrderDessertEntity
 import com.ramir.bakeryapp.data.database.entities.OrderEntity
+import com.ramir.bakeryapp.utils.BigDecimalConverter
+import com.ramir.bakeryapp.utils.LocalDateTimeConverter
+
 
 @Database(
     entities = [
         DessertEntity::class, OrderEntity::class,
         AdditionalIngredientEntity::class, CustomerEntity::class,
         OrderDessertEntity::class, DessertAdditionalIngredientEntity::class], version = 1)
+@TypeConverters(BigDecimalConverter::class, LocalDateTimeConverter::class)
 abstract class BakeryDatabase: RoomDatabase(){
 
     abstract fun getDessertDao(): DessertDao

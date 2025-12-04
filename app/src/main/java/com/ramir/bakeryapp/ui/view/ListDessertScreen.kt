@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramir.bakeryapp.domain.model.Dessert
@@ -21,7 +22,7 @@ import com.ramir.bakeryapp.ui.viewmodel.DessertViewModel
 @Preview(showBackground = true)
 @Composable
 fun ListDessertScreen(
-    dessertViewModel: DessertViewModel = viewModel()
+    dessertViewModel: DessertViewModel = hiltViewModel()
 ){
     val dessertListState by dessertViewModel.dessertList.collectAsStateWithLifecycle(initialValue = emptyList())
 

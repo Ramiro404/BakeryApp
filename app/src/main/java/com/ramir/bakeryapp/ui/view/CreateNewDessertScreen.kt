@@ -22,13 +22,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramir.bakeryapp.ui.viewmodel.DessertViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
 
 @Preview(showBackground = true)
 @Composable
-fun CreateNewDessertScreen(dessertViewModel: DessertViewModel = viewModel()){
+fun CreateNewDessertScreen(dessertViewModel: DessertViewModel = hiltViewModel()){
     val nameState = remember { mutableStateOf("") }
     val  descriptionState = remember { mutableStateOf("") }
     val  unitAvailableState = remember { mutableIntStateOf(0) }
@@ -56,7 +58,7 @@ fun CreateNewDessertScreen(dessertViewModel: DessertViewModel = viewModel()){
 
                 OutlinedTextField(
                     value = unitAvailableState.intValue.toString(),
-                    onValueChange = { value:String -> if(value.isDigitsOnly()) unitAvailableState.intValue = value.toInt() },
+                    onValueChange = { value:String -> if(value.isDigitsOnly()) unitAvailableState.intValue = value.toInt() else 0 },
                     label = { Text(text = "Unidades disponibles") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
 
@@ -64,7 +66,7 @@ fun CreateNewDessertScreen(dessertViewModel: DessertViewModel = viewModel()){
 
                 OutlinedTextField(
                     value = priceState.value.toString(),
-                    onValueChange = { if(it.isDigitsOnly()) priceState.value = it.toBigDecimal() },
+                    onValueChange = { if(it.isDigitsOnly() || it.equals(".")) priceState.value = it.toBigDecimal() else 0 },
                     label = { Text(text = "Precio unitario del postre") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                 )

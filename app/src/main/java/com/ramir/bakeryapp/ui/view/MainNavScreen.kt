@@ -71,7 +71,11 @@ private fun AppNavHost(
             composable(destination.route){
                 when(destination) {
                     Destination.INVENTORY -> InventoryScreen(
-                        navigateToCreateNewDessert = { navController.navigate(route = NavDestination.CreateNewDessert) }
+                        navigateToCreateNewDessert = {
+                            navController.navigate(route = NavDestination.CreateNewDessert) },
+                        navigateToEditDessert = {
+                            navController.navigate(route = NavDestination.EditDessertList)
+                        }
                     )
                     Destination.SALES -> TODO()
                     Destination.USER -> TODO()

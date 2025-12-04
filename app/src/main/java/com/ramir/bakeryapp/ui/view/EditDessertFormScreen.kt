@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramir.bakeryapp.ui.viewmodel.DessertViewModel
@@ -30,7 +31,7 @@ import java.math.BigDecimal
 @Preview(showBackground = true)
 @Composable
 fun EditDessertFormScreen(
-    dessertViewModel: DessertViewModel = viewModel(),
+    dessertViewModel: DessertViewModel = hiltViewModel(),
     dessertId:String =""){
 
     val dessertState by dessertViewModel.dessert.collectAsStateWithLifecycle(initialValue = null)
