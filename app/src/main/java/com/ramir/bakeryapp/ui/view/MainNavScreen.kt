@@ -75,9 +75,23 @@ private fun AppNavHost(
                             navController.navigate(route = NavDestination.CreateNewDessert) },
                         navigateToEditDessert = {
                             navController.navigate(route = NavDestination.EditDessertList)
+                        },
+                        navigateToListIngredients = {
+                            navController.navigate(route = NavDestination.IngredientList)
+                        },
+                        navigateToEditIngredients = {
+                            navController.navigate( route = NavDestination.EditIngredient)
+                        },
+                        navigateToCreateIngredients = {
+                            navController.navigate( route = NavDestination.CreateIngredient)
+                        },
+
+                    )
+                    Destination.SALES -> SalesScreen(
+                        navigateToSaleDessertList = {
+                            navController.navigate( route = NavDestination.SaleDessertList)
                         }
                     )
-                    Destination.SALES -> TODO()
                     Destination.USER -> TODO()
                 }
             }

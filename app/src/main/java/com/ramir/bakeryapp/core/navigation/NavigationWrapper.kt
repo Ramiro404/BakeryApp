@@ -10,6 +10,8 @@ import androidx.navigation.navArgument
 import com.ramir.bakeryapp.ui.view.CreateNewDessertScreen
 import com.ramir.bakeryapp.ui.view.EditDessertFormScreen
 import com.ramir.bakeryapp.ui.view.EditDessertScreen
+import com.ramir.bakeryapp.ui.view.SaleDessertScreen
+import com.ramir.bakeryapp.ui.view.SaleIngredientlist
 
 @Composable
 fun NavigationWrapper(modifier: Modifier = Modifier){
@@ -41,6 +43,29 @@ fun NavigationWrapper(modifier: Modifier = Modifier){
                 EditDessertFormScreen(dessertId = id)
             }else{
 
+            }
+        }
+
+        composable(
+            route = NavDestination.SaleDessertList,
+            content = {
+                SaleDessertScreen(
+                    onAddIngredients={dessertId -> navController.navigate(NavDestination.SaleIngredientListRoute(dessertId))}
+                )
+            }
+        )
+
+        composable(
+            route= NavDestination.SaleIngredientList,
+            arguments = listOf(
+                navArgument("id"){
+                    type = NavType.IntType
+                }
+            )
+        ){ backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("id")
+            if(id != null){
+                SaleIngredientlist(id)
             }
         }
     }

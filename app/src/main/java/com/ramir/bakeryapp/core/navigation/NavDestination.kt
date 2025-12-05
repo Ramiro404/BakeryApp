@@ -16,6 +16,24 @@ import kotlinx.serialization.Serializable
 
         fun EditDessertFormRoute(id:String) = "editDessertList/$id"
 
+
+        @Serializable
+        val IngredientList:String = "ingredientList"
+
+        @Serializable
+        val EditIngredient:String = "ingredientEdit"
+
+        @Serializable
+        val CreateIngredient:String = "ingredientCreate"
+
+
+        @Serializable
+        val SaleDessertList:String = "saleDessertList"
+
+        @Serializable
+        val SaleIngredientList:String = "saleIngredientList/{dessertId}"
+
+        fun SaleIngredientListRoute(dessertId: Int) = "editDessertList/$dessertId"
     }
 
 }

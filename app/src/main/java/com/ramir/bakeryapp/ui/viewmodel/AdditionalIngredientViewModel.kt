@@ -40,4 +40,11 @@ class AdditionalIngredientViewModel @Inject constructor(
             postNewAdditionalIngredient(ingredient)
         }
     }
+
+    fun updateIngredient(id: Int, name:String, description:String, unitAvailable:Int, price: BigDecimal){
+        val ingredient = AdditionalIngredient(id, name, description, unitAvailable, price)
+        viewModelScope.launch {
+            updateAdditionalIngredient(ingredient)
+        }
+    }
 }

@@ -15,11 +15,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.ramir.bakeryapp.R
 
-@Preview(showBackground = true)
 @Composable
 fun InventoryScreen(
     navigateToCreateNewDessert: () -> Unit,
-    navigateToEditDessert: () -> Unit
+    navigateToEditDessert: () -> Unit,
+    navigateToListIngredients: () -> Unit,
+    navigateToEditIngredients: () -> Unit,
+    navigateToCreateIngredients: () -> Unit
 ){
     Scaffold { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
@@ -27,6 +29,9 @@ fun InventoryScreen(
                 modifier = Modifier.fillMaxWidth(),
                 navigateToCreateNewDessert,
                 navigateToEditDessert,
+                navigateToListIngredients,
+                navigateToEditIngredients,
+                navigateToCreateIngredients
             )
         }
     }
@@ -37,7 +42,10 @@ fun InventoryScreen(
 private fun InventoryMenu(
     modifier: Modifier = Modifier,
     navigateToCreateNewDessert: () -> Unit,
-    navigateToEditDessert: () ->  Unit
+    navigateToEditDessert: () ->  Unit,
+    navigateToListIngredients: () -> Unit,
+    navigateToEditIngredients: () -> Unit,
+    navigateToCreateIngredients: () -> Unit
     ){
     Column(
         modifier = modifier,
@@ -69,6 +77,24 @@ private fun InventoryMenu(
             onClick = {}
         ) {
             Text(text = stringResource(R.string.delete_dessert))
+        }
+
+        OutlinedButton(
+            onClick = { navigateToListIngredients() }
+        ) {
+            Text(text = "Ver Ingredientes")
+        }
+
+        OutlinedButton(
+            onClick = { navigateToEditIngredients() }
+        ) {
+            Text(text = "Agregar/Restar Ingredientes")
+        }
+
+        OutlinedButton(
+            onClick = { navigateToCreateIngredients() }
+        ) {
+            Text(text = "Agregar/Restar Ingredientes")
         }
     }
 }
