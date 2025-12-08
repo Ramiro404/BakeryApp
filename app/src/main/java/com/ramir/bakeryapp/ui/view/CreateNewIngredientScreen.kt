@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
 import com.ramir.bakeryapp.ui.viewmodel.AdditionalIngredientViewModel
 import java.math.BigDecimal
 
@@ -32,7 +33,9 @@ fun CreateNewIngredientScreen(additionalIngredientViewModel: AdditionalIngredien
     val  unitAvailableState = remember { mutableIntStateOf(0) }
     val  priceState = remember { mutableStateOf(BigDecimal.ZERO) }
 
-    Scaffold{paddingValues ->
+    Scaffold(
+        topBar = {BakeryTopAppBar("Crear Nuevo Ingrediente")}
+    ){paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ){

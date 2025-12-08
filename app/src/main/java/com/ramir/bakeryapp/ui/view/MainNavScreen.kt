@@ -15,9 +15,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.ramir.bakeryapp.core.navigation.NavDestination
 import com.ramir.bakeryapp.ui.Destination
 
@@ -70,7 +72,8 @@ private fun AppNavHost(
         Destination.entries.forEach { destination ->
             composable(destination.route){
                 when(destination) {
-                    Destination.INVENTORY -> InventoryScreen(
+                    Destination.INVENTORY ->
+                        InventoryScreen(
                         navigateToCreateNewDessert = {
                             navController.navigate(route = NavDestination.CreateNewDessert) },
                         navigateToEditDessert = {
@@ -85,6 +88,9 @@ private fun AppNavHost(
                         navigateToCreateIngredients = {
                             navController.navigate( route = NavDestination.CreateIngredient)
                         },
+                            navigateToListDesserts = {
+                                navController.navigate(route = NavDestination.DessertList)
+                            },
 
                     )
                     Destination.SALES -> SalesScreen(
@@ -93,6 +99,72 @@ private fun AppNavHost(
                         }
                     )
                     Destination.USER -> TODO()
+                }
+            }
+            composable(
+                route = NavDestination.CreateNewDessert,
+                content = { CreateNewDessertScreen() }
+            )
+            composable(
+                route = NavDestination.CreateIngredient,
+                content = { CreateNewIngredientScreen() }
+            )
+            composable(
+                route = NavDestination.EditIngredient,
+                content = { EditAdditionalIngredient() }
+            )
+            composable(
+                route = NavDestination.IngredientList,
+                content = { ListIngredientScreen() }
+            )
+            composable(
+                route = NavDestination.DessertList,
+                content = { ListDessertScreen() }
+            )
+            composable(
+                route = NavDestination.EditDessertList,
+                content = {
+                    EditDessertScreen(
+                        onEditDessert={id->navController.navigate(NavDestination.EditDessertFormRoute(id))}
+                    )
+                }
+            )
+            composable(
+                route = NavDestination.EditDessertForm,
+                arguments = listOf(
+                    navArgument("id"){
+                        type = NavType.StringType
+                    }
+                )
+            ){ backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")
+                if(id != null){
+                    EditDessertFormScreen(dessertId = id)
+                }else{
+
+                }
+            }
+
+            composable(
+                route = NavDestination.SaleDessertList,
+                content = {
+                    SaleDessertScreen(
+                        onAddIngredients={dessertId -> navController.navigate(NavDestination.SaleIngredientListRoute(dessertId))}
+                    )
+                }
+            )
+
+            composable(
+                route= NavDestination.SaleIngredientList,
+                arguments = listOf(
+                    navArgument("dessertId"){
+                        type = NavType.IntType
+                    }
+                )
+            ){ backStackEntry ->
+                val id = backStackEntry.arguments?.getInt("dessertId")
+                if(id != null){
+                    SaleIngredientListSale(dessertId = id, navigateToSaleDessertList = { navController.popBackStack()})
                 }
             }
         }

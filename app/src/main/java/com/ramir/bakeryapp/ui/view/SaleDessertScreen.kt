@@ -6,18 +6,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramir.bakeryapp.domain.model.Dessert
+import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
 import com.ramir.bakeryapp.ui.viewmodel.DessertViewModel
 
 @Composable
@@ -25,16 +27,21 @@ fun SaleDessertScreen(
     onAddIngredients: (id:Int) -> Unit,
     desserViewModel: DessertViewModel = hiltViewModel()
 ){
-    val dessertListState by desserViewModel.dessertList.collectAsStateWithLifecycle(initialValue = emptyList())
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        if(dessertListState.isNotEmpty()){
-            DessertList(dessertListState, onAddIngredients)
-        }else{
-            Text(text = "No hay postres en este momento")
+    val dessertListState by desserViewModel.dessertListUiState.collectAsStateWithLifecycle(initialValue = emptyList())
+    Scaffold(
+        topBar = {BakeryTopAppBar("Venta")}
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier.fillMaxSize().padding(paddingValues)
+        ) {
+            if(dessertListState.isNotEmpty()){
+                DessertList(dessertListState, onAddIngredients)
+            }else{
+                Text(text = "No hay postres en este momento")
+            }
         }
     }
+
 }
 
 @Composable

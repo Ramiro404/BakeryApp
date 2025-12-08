@@ -10,63 +10,18 @@ import androidx.navigation.navArgument
 import com.ramir.bakeryapp.ui.view.CreateNewDessertScreen
 import com.ramir.bakeryapp.ui.view.EditDessertFormScreen
 import com.ramir.bakeryapp.ui.view.EditDessertScreen
+import com.ramir.bakeryapp.ui.view.MainNavScreen
 import com.ramir.bakeryapp.ui.view.SaleDessertScreen
-import com.ramir.bakeryapp.ui.view.SaleIngredientlist
+import com.ramir.bakeryapp.ui.view.SaleIngredientListSale
 
 @Composable
 fun NavigationWrapper(modifier: Modifier = Modifier){
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = NavDestination.CreateNewDessert){
+    NavHost(navController = navController, startDestination = NavDestination.MainNavBarDestination){
         composable(
-            route = NavDestination.CreateNewDessert,
-            content = { CreateNewDessertScreen() }
+            route = NavDestination.MainNavBarDestination,
+            content = { MainNavScreen() }
         )
-        composable(
-            route = NavDestination.EditDessertList,
-            content = {
-                EditDessertScreen(
-                    onEditDessert={id->navController.navigate(NavDestination.EditDessertFormRoute(id))}
-                )
-            }
-        )
-        composable(
-            route = NavDestination.EditDessertForm,
-            arguments = listOf(
-                navArgument("id"){
-                    type = NavType.StringType
-                }
-            )
-        ){ backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id")
-            if(id != null){
-                EditDessertFormScreen(dessertId = id)
-            }else{
-
-            }
-        }
-
-        composable(
-            route = NavDestination.SaleDessertList,
-            content = {
-                SaleDessertScreen(
-                    onAddIngredients={dessertId -> navController.navigate(NavDestination.SaleIngredientListRoute(dessertId))}
-                )
-            }
-        )
-
-        composable(
-            route= NavDestination.SaleIngredientList,
-            arguments = listOf(
-                navArgument("id"){
-                    type = NavType.IntType
-                }
-            )
-        ){ backStackEntry ->
-            val id = backStackEntry.arguments?.getInt("id")
-            if(id != null){
-                SaleIngredientlist(id)
-            }
-        }
     }
 }

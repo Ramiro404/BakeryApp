@@ -21,11 +21,13 @@ class DessertViewModel @Inject constructor(
     private val postNewDessertUseCase: PostNewDessertUseCase,
     private val getDessertByIdUseCase: GetDessertByIdUseCase
 ): ViewModel() {
-    private val _dessertList = MutableStateFlow<List<Dessert>>(emptyList())
-    val dessertList: Flow<List<Dessert>> = _dessertList.asStateFlow()
+    private val _dessertListUiState = MutableStateFlow<List<Dessert>>(emptyList())
+    val dessertListUiState: Flow<List<Dessert>> = _dessertListUiState.asStateFlow()
 
-    private val _dessert = MutableStateFlow<Dessert?>(null)
-    val dessert: Flow<Dessert?> = _dessert.asStateFlow()
+    private val _dessertUiState = MutableStateFlow<Dessert?>(null)
+    val dessertUiState: Flow<Dessert?> = _dessertUiState.asStateFlow()
+
+
 
     init {
         getDessertList()
@@ -42,7 +44,7 @@ class DessertViewModel @Inject constructor(
 
     fun getDessertList(){
         viewModelScope.launch {
-            _dessertList.update {
+            _dessertListUiState.update {
                 getAllDessertsUseCase()
             }
         }
@@ -50,7 +52,7 @@ class DessertViewModel @Inject constructor(
 
     fun getDessertById(id: Int){
         viewModelScope.launch {
-            _dessert.update {
+            _dessertUiState.update {
                 getDessertByIdUseCase(id)
             }
         }

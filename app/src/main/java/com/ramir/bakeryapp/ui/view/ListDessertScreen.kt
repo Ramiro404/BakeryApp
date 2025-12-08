@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,8 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramir.bakeryapp.domain.model.Dessert
+import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
 import com.ramir.bakeryapp.ui.viewmodel.DessertViewModel
 
 @Preview(showBackground = true)
@@ -24,17 +26,21 @@ import com.ramir.bakeryapp.ui.viewmodel.DessertViewModel
 fun ListDessertScreen(
     dessertViewModel: DessertViewModel = hiltViewModel()
 ){
-    val dessertListState by dessertViewModel.dessertList.collectAsStateWithLifecycle(initialValue = emptyList())
-
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        if(dessertListState.isNotEmpty()){
-            DessertList(dessertListState)
-        }else{
-            Text(text = "No hay articulos en este momento")
+    val dessertListState by dessertViewModel.dessertListUiState.collectAsStateWithLifecycle(initialValue = emptyList())
+    Scaffold(
+        topBar = { BakeryTopAppBar("Mostrar Postres") }
+    ){ paddingValues ->
+        Box(
+            modifier = Modifier.fillMaxSize().padding(paddingValues)
+        ) {
+            if(dessertListState.isNotEmpty()){
+                DessertList(dessertListState)
+            }else{
+                Text(text = "No hay articulos en este momento")
+            }
         }
     }
+
 }
 
 @Composable

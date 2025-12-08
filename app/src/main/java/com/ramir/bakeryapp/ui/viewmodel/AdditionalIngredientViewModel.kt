@@ -6,6 +6,7 @@ import com.ramir.bakeryapp.domain.additionalIngredient.GetAllIAdditionalngredien
 import com.ramir.bakeryapp.domain.additionalIngredient.PostNewAdditionalIngredient
 import com.ramir.bakeryapp.domain.additionalIngredient.UpdateAdditionalIngredient
 import com.ramir.bakeryapp.domain.model.AdditionalIngredient
+import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
+@HiltViewModel
 class AdditionalIngredientViewModel @Inject constructor(
     private val getAllIAdditionalngredientsUseCase: GetAllIAdditionalngredientsUseCase,
     private val postNewAdditionalIngredient: PostNewAdditionalIngredient,

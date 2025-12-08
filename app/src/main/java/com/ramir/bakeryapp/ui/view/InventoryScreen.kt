@@ -5,25 +5,34 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.ramir.bakeryapp.R
+import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InventoryScreen(
     navigateToCreateNewDessert: () -> Unit,
     navigateToEditDessert: () -> Unit,
     navigateToListIngredients: () -> Unit,
     navigateToEditIngredients: () -> Unit,
-    navigateToCreateIngredients: () -> Unit
+    navigateToCreateIngredients: () -> Unit,
+    navigateToListDesserts: () -> Unit
 ){
-    Scaffold { paddingValues ->
+    Scaffold(
+        topBar = { BakeryTopAppBar("Inventario") }
+    ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
             InventoryMenu(
                 modifier = Modifier.fillMaxWidth(),
@@ -31,7 +40,8 @@ fun InventoryScreen(
                 navigateToEditDessert,
                 navigateToListIngredients,
                 navigateToEditIngredients,
-                navigateToCreateIngredients
+                navigateToCreateIngredients,
+                navigateToListDesserts
             )
         }
     }
@@ -45,56 +55,47 @@ private fun InventoryMenu(
     navigateToEditDessert: () ->  Unit,
     navigateToListIngredients: () -> Unit,
     navigateToEditIngredients: () -> Unit,
-    navigateToCreateIngredients: () -> Unit
+    navigateToCreateIngredients: () -> Unit,
+    navigateToListDesserts: () -> Unit
     ){
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         OutlinedButton(
-            onClick = {
-                navigateToCreateNewDessert
-            }
+            onClick = navigateToCreateNewDessert
         ) {
             Text(text = stringResource(R.string.add_new_dessert))
         }
 
         OutlinedButton(
-            onClick = {
-                navigateToEditDessert()
-            }
+            onClick = navigateToEditDessert
         ) {
             Text(text = stringResource(R.string.edit_dessert))
         }
 
         OutlinedButton(
-            onClick = {}
+            onClick = navigateToListDesserts
         ) {
             Text(text = stringResource(R.string.list_desserts))
         }
 
         OutlinedButton(
-            onClick = {}
-        ) {
-            Text(text = stringResource(R.string.delete_dessert))
-        }
-
-        OutlinedButton(
-            onClick = { navigateToListIngredients() }
+            onClick = navigateToListIngredients
         ) {
             Text(text = "Ver Ingredientes")
         }
 
         OutlinedButton(
-            onClick = { navigateToEditIngredients() }
+            onClick = navigateToEditIngredients
         ) {
             Text(text = "Agregar/Restar Ingredientes")
         }
 
         OutlinedButton(
-            onClick = { navigateToCreateIngredients() }
+            onClick = navigateToCreateIngredients
         ) {
-            Text(text = "Agregar/Restar Ingredientes")
+            Text(text = "Crear Nuevo Ingrediente")
         }
     }
 }

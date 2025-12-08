@@ -6,6 +6,9 @@ import kotlinx.serialization.Serializable
  class NavDestination {
     companion object{
         @Serializable
+        val MainNavBarDestination:String = "main"
+
+        @Serializable
         val CreateNewDessert:String = "createNewDessert"
 
         @Serializable
@@ -16,6 +19,8 @@ import kotlinx.serialization.Serializable
 
         fun EditDessertFormRoute(id:String) = "editDessertList/$id"
 
+        @Serializable
+        val DessertList:String = "dessertList"
 
         @Serializable
         val IngredientList:String = "ingredientList"

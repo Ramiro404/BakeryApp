@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
 import com.ramir.bakeryapp.ui.viewmodel.DessertViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
@@ -36,7 +37,9 @@ fun CreateNewDessertScreen(dessertViewModel: DessertViewModel = hiltViewModel())
     val  unitAvailableState = remember { mutableIntStateOf(0) }
     val  priceState = remember { mutableStateOf(BigDecimal.ZERO) }
 
-    Scaffold{paddingValues ->
+    Scaffold(
+        topBar = {BakeryTopAppBar("Crear Nuevo Postre")}
+    ){paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ){
@@ -58,7 +61,7 @@ fun CreateNewDessertScreen(dessertViewModel: DessertViewModel = hiltViewModel())
 
                 OutlinedTextField(
                     value = unitAvailableState.intValue.toString(),
-                    onValueChange = { value:String -> if(value.isDigitsOnly()) unitAvailableState.intValue = value.toInt() else 0 },
+                    onValueChange = { value:String -> if(value.isDigitsOnly()) unitAvailableState.intValue = value.toInt() else unitAvailableState.value = 0 },
                     label = { Text(text = "Unidades disponibles") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
 
@@ -66,7 +69,8 @@ fun CreateNewDessertScreen(dessertViewModel: DessertViewModel = hiltViewModel())
 
                 OutlinedTextField(
                     value = priceState.value.toString(),
-                    onValueChange = { if(it.isDigitsOnly() || it.equals(".")) priceState.value = it.toBigDecimal() else 0 },
+                    onValueChange = { if(it.isDigitsOnly() || it.equals(".")) priceState.value = it.toBigDecimal() else priceState.value =
+                        BigDecimal.ZERO },
                     label = { Text(text = "Precio unitario del postre") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                 )

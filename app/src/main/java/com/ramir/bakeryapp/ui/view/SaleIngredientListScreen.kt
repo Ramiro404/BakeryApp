@@ -1,6 +1,6 @@
 package com.ramir.bakeryapp.ui.view
 
-import android.app.AlertDialog
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,14 +28,27 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramir.bakeryapp.R
 import com.ramir.bakeryapp.domain.model.AdditionalIngredient
+import com.ramir.bakeryapp.domain.model.IngredientCart
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
 import com.ramir.bakeryapp.ui.viewmodel.AdditionalIngredientViewModel
+import com.ramir.bakeryapp.ui.viewmodel.CartViewModel
+import kotlin.collections.mutableListOf
 
 @Composable
-fun EditAdditionalIngredient(additionalIngredientViewModel: AdditionalIngredientViewModel = hiltViewModel()){
+fun SaleIngredientListSale(
+    dessertId:Int,
+    additionalIngredientViewModel: AdditionalIngredientViewModel = hiltViewModel(),
+    cartViewModel: CartViewModel = hiltViewModel(),
+    navigateToSaleDessertList: () -> Unit
+    ){
     val additionalIngredientList by additionalIngredientViewModel.additionalIngredientList.collectAsStateWithLifecycle(initialValue = emptyList())
+    val cartList by cartViewModel.cart.collectAsStateWithLifecycle(initialValue = emptyList())
+    var showDialog = remember{ mutableStateOf(false) }
+    var quantity = remember { mutableStateOf(0) }
+    var ingredientCartList = remember { mutableListOf<IngredientCart>() }
+
     Scaffold(
-        topBar = {BakeryTopAppBar("Editar Ingrediente")}
+        topBar = {BakeryTopAppBar("Selecciona los ingredientes")}
     ) { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
@@ -45,58 +58,68 @@ fun EditAdditionalIngredient(additionalIngredientViewModel: AdditionalIngredient
                     columns = GridCells.Fixed(2)
                 ) {
                     items(additionalIngredientList){ item ->
-                        IngredientItemEdit(
+                        IngredientItem(
                             item,
-                            Modifier.fillMaxWidth(),
-                            { quantityAvailable ->
-
-                                additionalIngredientViewModel.updateIngredient(
-                                    item.id, item.name, item.description, quantityAvailable, item.price
-                                )
-                            })
+                            Modifier.fillMaxWidth().clickable{ showDialog.value = true },
+                            showDialog.value,
+                            quantity= quantity.value,
+                            onAdd = { quantity.value++ },
+                            onSubstract = { quantity.value-- },
+                            onSubmit = {
+                                val ingredientCart = IngredientCart(item, quantity.value)
+                                ingredientCartList.add(ingredientCart)
+                            },
+                            onDismissRequest = { showDialog.value = false })
                     }
                 }
+                Row(modifier = Modifier.fillMaxWidth()){
+                    Button(
+                        onClick = {
+                            navigateToSaleDessertList()
+                        }) {
+                        Text(text = "Agregar otro postre")
+                    }
+                }
+
             }else{
 
             }
         }
     }
-
 }
 
 @Composable
-fun IngredientItemEdit(
+private fun IngredientItem(
     item: AdditionalIngredient,
     modifier: Modifier =  Modifier,
-    onSubmit: (quantityAvailable:Int) -> Unit){
-    val openDialog = remember { mutableStateOf(false) }
-    val quantityAvailable = remember { mutableStateOf(value = item.unitAvailable) }
+    showDialog: Boolean,
+    quantity:Int,
+    onAdd: () -> Unit,
+    onSubstract: () -> Unit,
+    onSubmit: () -> Unit,
+    onDismissRequest: () -> Unit){
     Card(modifier) {
         Column {
             Text(text = item.name)
             Text(text = item.description)
             Text(text = item.unitAvailable.toString())
             Text(text = item.price.toString())
-            Button(
-                onClick = {
-                    openDialog.value = true
-                }
-            ) {
-                Text(text = "Agregar/Restar iNVERNTARIO")
-            }
+
         }
     }
 
-    if(openDialog.value){
+    if(showDialog){
         AddRemoveIngredientDialog(
-            quantity = quantityAvailable.value,
-            onAdd = { quantityAvailable.value++ },
-            onSubstract = { quantityAvailable.value-- },
-            onDismissRequest = { openDialog.value = false},
-            onSubmit = {onSubmit(quantityAvailable.value)}
+            quantity,
+            onAdd,
+            onSubstract,
+            onDismissRequest,
+            onSubmit
         )
     }
 }
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

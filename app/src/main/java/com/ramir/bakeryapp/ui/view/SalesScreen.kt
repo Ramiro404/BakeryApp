@@ -10,12 +10,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
 
 @Composable
 fun SalesScreen(
     navigateToSaleDessertList: () -> Unit
 ){
-    Scaffold { paddingValues ->
+    Scaffold(
+        topBar = {BakeryTopAppBar("Realizar una venta")}
+    ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
             SalesMenu(
                 modifier = Modifier.fillMaxWidth(),
@@ -32,13 +35,13 @@ fun SalesMenu(
 ){
     Column() {
         OutlinedButton(
-            onClick = { navigateToSaleDessertList() }
+            onClick = {  }
         ) {
             Text(text = "Realizar una nueva venta")
         }
 
         OutlinedButton(
-            onClick = {}
+            onClick = navigateToSaleDessertList
         ) {
             Text(text = "Ver ventas")
         }
