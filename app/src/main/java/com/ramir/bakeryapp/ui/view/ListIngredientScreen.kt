@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
@@ -18,31 +16,41 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramir.bakeryapp.domain.model.AdditionalIngredient
+import com.ramir.bakeryapp.domain.model.AdditionalIngredientListUiState
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
+import com.ramir.bakeryapp.ui.components.DialogError
+import com.ramir.bakeryapp.ui.components.LoadingProgress
 import com.ramir.bakeryapp.ui.viewmodel.AdditionalIngredientViewModel
+import com.ramir.bakeryapp.utils.Resource
 
 @Composable
 fun ListIngredientScreen(additionalIngredientViewModel: AdditionalIngredientViewModel = hiltViewModel()){
-    val additionalIngredientList by additionalIngredientViewModel.additionalIngredientList.collectAsStateWithLifecycle(initialValue = emptyList())
+    val additionalIngredientList by additionalIngredientViewModel.additionalIngredientListUiState.collectAsStateWithLifecycle(initialValue = AdditionalIngredientListUiState())
     Scaffold(
         topBar = { BakeryTopAppBar("Mostrar Ingredientes") }
     ){ paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ){
-            if(additionalIngredientList.isNotEmpty()){
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2)
-                ) {
-                    items(additionalIngredientList){ item ->
-                        IngredientItem(item, Modifier.fillMaxWidth())
+            when(val resource = additionalIngredientList.additionalIngredientList) {
+                is Resource.Error -> DialogError({}, resource.message)
+                Resource.Loading -> LoadingProgress()
+                is Resource.Success<List<AdditionalIngredient>> -> {
+                    if(resource.data.isNotEmpty()){
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2)
+                        ) {
+                            items(resource.data){ item ->
+                                IngredientItem(item, Modifier.fillMaxWidth())
+                            }
+                        }
+                    }else{
+                        DialogError({}, "No hay Ingredientes")
                     }
                 }
-            }else{
-
             }
+
         }
     }
 

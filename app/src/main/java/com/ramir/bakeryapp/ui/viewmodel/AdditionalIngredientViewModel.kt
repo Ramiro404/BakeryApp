@@ -6,6 +6,10 @@ import com.ramir.bakeryapp.domain.additionalIngredient.GetAllIAdditionalngredien
 import com.ramir.bakeryapp.domain.additionalIngredient.PostNewAdditionalIngredient
 import com.ramir.bakeryapp.domain.additionalIngredient.UpdateAdditionalIngredient
 import com.ramir.bakeryapp.domain.model.AdditionalIngredient
+import com.ramir.bakeryapp.domain.model.AdditionalIngredientListUiState
+import com.ramir.bakeryapp.domain.model.SaveUiState
+import com.ramir.bakeryapp.utils.Resource
+import com.ramir.bakeryapp.utils.SaveResource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -20,33 +24,73 @@ class AdditionalIngredientViewModel @Inject constructor(
     private val getAllIAdditionalngredientsUseCase: GetAllIAdditionalngredientsUseCase,
     private val postNewAdditionalIngredient: PostNewAdditionalIngredient,
     private val updateAdditionalIngredient: UpdateAdditionalIngredient
-): ViewModel() {
-    private val _additionalIngredientList = MutableStateFlow<List<AdditionalIngredient>>(emptyList())
-    val additionalIngredientList: Flow<List<AdditionalIngredient>> = _additionalIngredientList.asStateFlow()
+) : ViewModel() {
+    private val _additionalIngredientListUiState =
+        MutableStateFlow(AdditionalIngredientListUiState())
+    val additionalIngredientListUiState: Flow<AdditionalIngredientListUiState> =
+        _additionalIngredientListUiState.asStateFlow()
+
+    private val _saveUiState = MutableStateFlow(SaveUiState())
+    val saveUiState: Flow<SaveUiState> = _saveUiState.asStateFlow()
 
     init {
         getList()
     }
 
-    private fun getList(){
+    private fun getList() {
         viewModelScope.launch {
-            _additionalIngredientList.update {
-                getAllIAdditionalngredientsUseCase()
+            _additionalIngredientListUiState.update { it.copy(additionalIngredientList = Resource.Loading) }
+            try {
+                val result = getAllIAdditionalngredientsUseCase()
+                _additionalIngredientListUiState.update {
+                    it.copy(additionalIngredientList = Resource.Success(data = result))
+                }
+            } catch (e: Exception) {
+                _additionalIngredientListUiState.update {
+                    it.copy(
+                        additionalIngredientList = Resource.Error(
+                            message = "Ocurrio un error"
+                        )
+                    )
+                }
             }
         }
     }
 
-    fun postIngredient(name:String, description:String, unitAvailable:Int, price: BigDecimal){
-        val ingredient = AdditionalIngredient(name=name, description=description, unitAvailable=unitAvailable, price=price)
+    fun postIngredient(name: String, description: String, unitAvailable: Int, price: BigDecimal) {
+        val ingredient = AdditionalIngredient(
+            name = name,
+            description = description,
+            unitAvailable = unitAvailable,
+            price = price
+        )
         viewModelScope.launch {
-            postNewAdditionalIngredient(ingredient)
+            _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
+            try{
+                postNewAdditionalIngredient(ingredient)
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
+            }catch (e: Exception){
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error")) }
+            }
         }
     }
 
-    fun updateIngredient(id: Int, name:String, description:String, unitAvailable:Int, price: BigDecimal){
+    fun updateIngredient(
+        id: Int,
+        name: String,
+        description: String,
+        unitAvailable: Int,
+        price: BigDecimal
+    ) {
         val ingredient = AdditionalIngredient(id, name, description, unitAvailable, price)
         viewModelScope.launch {
-            updateAdditionalIngredient(ingredient)
+            _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
+            try {
+                updateAdditionalIngredient(ingredient)
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
+            }catch (e: Exception){
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error")) }
+            }
         }
     }
 }

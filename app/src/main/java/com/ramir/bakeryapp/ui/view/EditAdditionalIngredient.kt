@@ -1,6 +1,5 @@
 package com.ramir.bakeryapp.ui.view
 
-import android.app.AlertDialog
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,47 +27,65 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramir.bakeryapp.R
 import com.ramir.bakeryapp.domain.model.AdditionalIngredient
+import com.ramir.bakeryapp.domain.model.AdditionalIngredientListUiState
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
+import com.ramir.bakeryapp.ui.components.DialogError
+import com.ramir.bakeryapp.ui.components.LoadingProgress
 import com.ramir.bakeryapp.ui.viewmodel.AdditionalIngredientViewModel
+import com.ramir.bakeryapp.utils.Resource
 
 @Composable
-fun EditAdditionalIngredient(additionalIngredientViewModel: AdditionalIngredientViewModel = hiltViewModel()){
-    val additionalIngredientList by additionalIngredientViewModel.additionalIngredientList.collectAsStateWithLifecycle(initialValue = emptyList())
+fun EditAdditionalIngredient(additionalIngredientViewModel: AdditionalIngredientViewModel = hiltViewModel()) {
+    val additionalIngredientList by additionalIngredientViewModel.additionalIngredientListUiState.collectAsStateWithLifecycle(
+        AdditionalIngredientListUiState()
+    )
     Scaffold(
-        topBar = {BakeryTopAppBar("Editar Ingrediente")}
+        topBar = { BakeryTopAppBar("Editar Ingrediente") }
     ) { paddingValues ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(paddingValues)
-        ){
-            if(additionalIngredientList.isNotEmpty()){
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2)
-                ) {
-                    items(additionalIngredientList){ item ->
-                        IngredientItemEdit(
-                            item,
-                            Modifier.fillMaxWidth(),
-                            { quantityAvailable ->
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            when (val resource = additionalIngredientList.additionalIngredientList) {
+                is Resource.Error -> DialogError({}, resource.message)
+                Resource.Loading -> LoadingProgress()
+                is Resource.Success<List<AdditionalIngredient>> -> {
+                    if (resource.data.isNotEmpty()) {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2)
+                        ) {
+                            items(resource.data) { item ->
+                                IngredientItemEdit(
+                                    item,
+                                    Modifier.fillMaxWidth(),
+                                    { quantityAvailable ->
 
-                                additionalIngredientViewModel.updateIngredient(
-                                    item.id, item.name, item.description, quantityAvailable, item.price
-                                )
-                            })
+                                        additionalIngredientViewModel.updateIngredient(
+                                            item.id,
+                                            item.name,
+                                            item.description,
+                                            quantityAvailable,
+                                            item.price
+                                        )
+                                    })
+                            }
+                        }
+                    } else {
+                        DialogError({}, "No hay Ingredientes")
                     }
                 }
-            }else{
-
             }
         }
     }
-
 }
 
 @Composable
 fun IngredientItemEdit(
     item: AdditionalIngredient,
-    modifier: Modifier =  Modifier,
-    onSubmit: (quantityAvailable:Int) -> Unit){
+    modifier: Modifier = Modifier,
+    onSubmit: (quantityAvailable: Int) -> Unit
+) {
     val openDialog = remember { mutableStateOf(false) }
     val quantityAvailable = remember { mutableStateOf(value = item.unitAvailable) }
     Card(modifier) {
@@ -87,13 +104,13 @@ fun IngredientItemEdit(
         }
     }
 
-    if(openDialog.value){
+    if (openDialog.value) {
         AddRemoveIngredientDialog(
             quantity = quantityAvailable.value,
             onAdd = { quantityAvailable.value++ },
             onSubstract = { quantityAvailable.value-- },
-            onDismissRequest = { openDialog.value = false},
-            onSubmit = {onSubmit(quantityAvailable.value)}
+            onDismissRequest = { openDialog.value = false },
+            onSubmit = { onSubmit(quantityAvailable.value) }
         )
     }
 }
@@ -105,10 +122,11 @@ private fun AddRemoveIngredientDialog(
     onAdd: () -> Unit,
     onSubstract: () -> Unit,
     onDismissRequest: () -> Unit,
-    onSubmit: () -> Unit){
+    onSubmit: () -> Unit
+) {
 
     BasicAlertDialog(
-        onDismissRequest = {onDismissRequest()},
+        onDismissRequest = { onDismissRequest() },
     ) {
         Row() {
             IconButton(

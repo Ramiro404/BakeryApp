@@ -2,6 +2,7 @@ package com.ramir.bakeryapp.domain.model
 
 import com.ramir.bakeryapp.data.database.entities.DessertEntity
 import com.ramir.bakeryapp.utils.Resource
+import com.ramir.bakeryapp.utils.SaveResource
 import java.math.BigDecimal
 
 data class Dessert(
@@ -20,4 +21,8 @@ data class DessertUiState(
 
 data class DessertListUiState(
     val dessertListUiState: Resource<List<Dessert>> = Resource.Loading
+)
+
+data class SaveUiState(
+    val saveUiResource: SaveResource = SaveResource.Loading
 )

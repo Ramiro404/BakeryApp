@@ -5,3 +5,9 @@ sealed class Resource<out T> {
     data class Success<out T>(val data: T): Resource<T>()
     data class Error(val message: String): Resource<Nothing>()
 }
+
+sealed class SaveResource {
+    data object Loading: SaveResource()
+    data object Success: SaveResource()
+    data class Error(val message: String): SaveResource()
+}

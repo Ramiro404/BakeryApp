@@ -21,16 +21,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ramir.bakeryapp.domain.model.AdditionalIngredient
 import com.ramir.bakeryapp.domain.model.Dessert
+import com.ramir.bakeryapp.domain.model.DessertListUiState
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
+import com.ramir.bakeryapp.ui.components.DialogError
+import com.ramir.bakeryapp.ui.components.LoadingProgress
 import com.ramir.bakeryapp.ui.viewmodel.DessertViewModel
+import com.ramir.bakeryapp.utils.Resource
 
-@Preview(showBackground = true)
 @Composable
 fun EditDessertScreen(
     dessertViewModel: DessertViewModel = hiltViewModel(),
     onEditDessert: (id:String)  -> Unit){
-    val dessertListState by dessertViewModel.dessertListUiState.collectAsStateWithLifecycle(initialValue = emptyList())
+    val dessertListState by dessertViewModel.dessertListUiState.collectAsStateWithLifecycle(initialValue = DessertListUiState())
 
     Scaffold(
         topBar = { BakeryTopAppBar("Editar Postre") }
@@ -38,11 +42,18 @@ fun EditDessertScreen(
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
-            if(dessertListState.isNotEmpty()){
-                DessertList(dessertListState,onEditDessert)
-            }else{
-                Text(text = "No hay articulos en este momento")
+            when(val resource = dessertListState.dessertListUiState) {
+                is Resource.Error -> DialogError({}, resource.message)
+                Resource.Loading -> LoadingProgress()
+                is Resource.Success<List<Dessert>> -> {
+                    if(resource.data.isNotEmpty()){
+                        DessertList(resource.data,onEditDessert)
+                    }else{
+                        Text(text = "No hay articulos en este momento")
+                    }
+                }
             }
+
         }
     }
 

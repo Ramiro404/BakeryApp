@@ -1,5 +1,6 @@
 package com.ramir.bakeryapp.ui.view
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,81 +27,112 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ramir.bakeryapp.domain.model.Dessert
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
+import com.ramir.bakeryapp.ui.components.DialogError
+import com.ramir.bakeryapp.ui.components.LoadingProgress
 import com.ramir.bakeryapp.ui.viewmodel.DessertViewModel
+import com.ramir.bakeryapp.utils.Resource
 import java.math.BigDecimal
 
 @Preview(showBackground = true)
 @Composable
 fun EditDessertFormScreen(
     dessertViewModel: DessertViewModel = hiltViewModel(),
-    dessertId:String =""){
+    dessertId: String = ""
+) {
 
     val dessertState by dessertViewModel.dessertUiState.collectAsStateWithLifecycle(initialValue = null)
     LaunchedEffect(Unit) {
         dessertViewModel.getDessertById(dessertId.toInt())
     }
 
-    val nameState = remember { mutableStateOf(dessertState?.name ?: "") }
-    val  descriptionState = remember { mutableStateOf(dessertState?.description ?: "") }
-    val  unitAvailableState = remember { mutableIntStateOf(dessertState?.unitAvailable ?: 0) }
-    val  priceState = remember { mutableStateOf(dessertState?.price ?: BigDecimal.ZERO) }
-
     Scaffold(
         topBar = { BakeryTopAppBar("Inventario") }
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                OutlinedTextField(
-                    value = nameState.value,
-                    onValueChange = { nameState.value = it },
-                    label = { Text(text = "Nombre del postre") }
-                )
-
-                OutlinedTextField(
-                    value = descriptionState.value,
-                    onValueChange = { descriptionState.value = it },
-                    label = { Text(text = "Descripcion del postre") }
-                )
-
-
-                OutlinedTextField(
-                    value = unitAvailableState.intValue.toString(),
-                    onValueChange = { value: String ->
-                        if (value.isDigitsOnly()) unitAvailableState.intValue = value.toInt()
-                    },
-                    label = { Text(text = "Unidades disponibles") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-
-                )
-
-                OutlinedTextField(
-                    value = priceState.value.toString(),
-                    onValueChange = { if (it.isDigitsOnly()) priceState.value = it.toBigDecimal() },
-                    label = { Text(text = "Precio unitario del postre") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Button(
-                    onClick = {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
+            when (val resource = dessertState?.dessertResource) {
+                is Resource.Error -> DialogError({}, "Algo salio mal") //show modal error
+                Resource.Loading -> LoadingProgress() // show spinner
+                is Resource.Success<Dessert> -> EditDessertFormContent(
+                    resource.data,
+                    {
                         dessertViewModel.saveNewDessert(
-                            nameState.value,
-                            descriptionState.value,
-                            unitAvailableState.value,
-                            priceState.value
+                            it.name,
+                            it.description,
+                            it.unitAvailable,
+                            it.price
                         )
-                    }
-                ) {
-                    Text(text = "Guardar esta informacion")
-                }
+                    }) //show ui
+                else -> { DialogError({}, "No se encontro el postre")} //show modal error
             }
+        }
+    }
+}
 
+@Composable
+private fun EditDessertFormContent(
+    dessertState: Dessert,
+    onSubmit: (dessert: Dessert) -> Unit
+) {
+    val nameState = remember { mutableStateOf(dessertState.name) }
+    val descriptionState = remember { mutableStateOf(dessertState.description) }
+    val unitAvailableState = remember { mutableIntStateOf(dessertState.unitAvailable) }
+    val priceState = remember { mutableStateOf(dessertState.price) }
+
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        OutlinedTextField(
+            value = nameState.value,
+            onValueChange = { nameState.value = it },
+            label = { Text(text = "Nombre del postre") }
+        )
+
+        OutlinedTextField(
+            value = descriptionState.value,
+            onValueChange = { descriptionState.value = it },
+            label = { Text(text = "Descripcion del postre") }
+        )
+
+
+        OutlinedTextField(
+            value = unitAvailableState.intValue.toString(),
+            onValueChange = { value: String ->
+                if (value.isDigitsOnly()) unitAvailableState.intValue = value.toInt()
+            },
+            label = { Text(text = "Unidades disponibles") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+
+        )
+
+        OutlinedTextField(
+            value = priceState.value.toString(),
+            onValueChange = { if (it.isDigitsOnly()) priceState.value = it.toBigDecimal() },
+            label = { Text(text = "Precio unitario del postre") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            onClick = {
+                val updatedDessert = Dessert(
+                    dessertState.id,
+                    nameState.value,
+                    descriptionState.value,
+                    unitAvailableState.value,
+                    priceState.value
+                )
+                onSubmit(updatedDessert)
+            }
+        ) {
+            Text(text = "Guardar esta informacion")
         }
     }
 
-    }
+}

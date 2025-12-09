@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,10 +24,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
+import com.ramir.bakeryapp.ui.components.DialogError
+import com.ramir.bakeryapp.ui.components.DialogSuccess
+import com.ramir.bakeryapp.ui.components.LoadingProgress
 import com.ramir.bakeryapp.ui.viewmodel.DessertViewModel
-import dagger.hilt.android.AndroidEntryPoint
+import com.ramir.bakeryapp.utils.SaveResource
 import java.math.BigDecimal
 
 @Preview(showBackground = true)
@@ -37,12 +41,16 @@ fun CreateNewDessertScreen(dessertViewModel: DessertViewModel = hiltViewModel())
     val  unitAvailableState = remember { mutableIntStateOf(0) }
     val  priceState = remember { mutableStateOf(BigDecimal.ZERO) }
 
+    val saveUiState by dessertViewModel.saveUiState.collectAsStateWithLifecycle()
+
     Scaffold(
         topBar = {BakeryTopAppBar("Crear Nuevo Postre")}
     ){paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ){
+
+
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -86,6 +94,12 @@ fun CreateNewDessertScreen(dessertViewModel: DessertViewModel = hiltViewModel())
                 ) {
                     Text(text = "Guardar este nuevo postre")
                 }
+            }
+
+            when(val resource = saveUiState.saveUiResource){
+                is SaveResource.Error -> DialogError({}, "Ocurrio un problema, no se pudo guardar el postre")
+                SaveResource.Loading -> LoadingProgress()
+                SaveResource.Success -> DialogSuccess({}, "Guardado correctamente")
             }
         }
     }
