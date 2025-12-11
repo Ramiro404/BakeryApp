@@ -28,30 +28,33 @@ import com.ramir.bakeryapp.R
 @Composable
 fun DialogError(
     onDismissRequest: () -> Unit,
-    message: String
+    message: String,
+    showDialog: Boolean = false
 ){
-    Dialog(
-        onDismissRequest = onDismissRequest,
-    ){
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+    if(showDialog){
+        Dialog(
+            onDismissRequest = onDismissRequest,
+        ){
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(painterResource(id=R.drawable.ic_close), contentDescription = "Error", tint = Color.Red)
-                Text(text = "Ocurrio un error", fontSize = 24.sp)
-                Text(text = message, fontSize = 18.sp)
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Button(onClick = onDismissRequest) {
-                    Text(text = "Cerrar")
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(painterResource(id=R.drawable.ic_close), contentDescription = "Error", tint = Color.Red)
+                    Text(text = "Ocurrio un error", fontSize = 24.sp)
+                    Text(text = message, fontSize = 18.sp)
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(onClick = onDismissRequest) {
+                        Text(text = "Cerrar")
+                    }
                 }
             }
         }
@@ -62,30 +65,34 @@ fun DialogError(
 @Composable
 fun DialogSuccess(
     onDismissRequest: () -> Unit,
-    message: String
+    message: String,
+    showDialog: Boolean = false
 ){
-    Dialog(
-        onDismissRequest = onDismissRequest,
-    ){
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+    if(showDialog){
+        Dialog(
+            onDismissRequest = onDismissRequest,
+        ){
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(painterResource(id=R.drawable.ic_check), contentDescription = "Check", tint = Color.Green)
-                Text(text = "Correcto!", fontSize = 24.sp)
-                Text(text = message, fontSize = 18.sp)
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Button(onClick = onDismissRequest) {
-                    Text(text = "Cerrar")
+                Column(
+                    modifier = Modifier.padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(painterResource(id=R.drawable.ic_check), contentDescription = "Check", tint = Color.Green)
+                    Text(text = "Correcto!", fontSize = 24.sp)
+                    Text(text = message, fontSize = 18.sp)
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(onClick = onDismissRequest) {
+                        Text(text = "Cerrar")
+                    }
                 }
             }
         }

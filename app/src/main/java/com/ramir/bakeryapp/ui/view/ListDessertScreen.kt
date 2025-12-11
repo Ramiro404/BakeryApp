@@ -1,6 +1,7 @@
 package com.ramir.bakeryapp.ui.view
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -54,17 +56,19 @@ fun ListDessertScreen(
 
 @Composable
 private fun DessertList(dessertList: List<Dessert>){
-    Row(Modifier.fillMaxWidth()){
-        Text(text = "#", modifier  = Modifier.weight(1f))
-        Text(text = "Nombre", modifier  = Modifier.weight(1f))
-        Text(text = "Unidades disponibles", modifier  = Modifier.weight(1f))
-        Text(text = "Descripcion", modifier  = Modifier.weight(1f))
-        Text(text = "Precio unitario", modifier  = Modifier.weight(1f))
-    }
-    HorizontalDivider(thickness = 2.dp)
-    LazyColumn() {
-        itemsIndexed(dessertList){ index, dessert ->
-            DessertItem(Modifier.fillMaxWidth(),dessert, index +1)
+    Column {
+        Row(Modifier.fillMaxWidth()){
+            Text(text = "#", modifier  = Modifier.weight(1f))
+            Text(text = "Nombre", modifier  = Modifier.weight(1f))
+            Text(text = "Unidades", modifier  = Modifier.weight(1f), overflow = TextOverflow.Ellipsis)
+            Text(text = "Descripcion", modifier  = Modifier.weight(2f))
+            Text(text = "Precio", modifier  = Modifier.weight(1f), overflow = TextOverflow.Ellipsis)
+        }
+        HorizontalDivider(thickness = 2.dp)
+        LazyColumn() {
+            itemsIndexed(dessertList){ index, dessert ->
+                DessertItem(Modifier.fillMaxWidth(),dessert, index +1)
+            }
         }
     }
 }
@@ -79,7 +83,7 @@ private fun DessertItem(
         Text(text = dessert.name, modifier  = Modifier.weight(1f))
         Text(text = dessert.unitAvailable.toString(), modifier  = Modifier.weight(1f))
         Text(text = dessert.description, modifier  = Modifier.weight(1f))
-        Text(text = dessert.price.toString(), modifier  = Modifier.weight(1f))
+        Text(text = "$ ${dessert.price.toString()}", modifier  = Modifier.weight(1f))
     }
     HorizontalDivider(thickness = 2.dp)
 }

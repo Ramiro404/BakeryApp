@@ -35,20 +35,24 @@ import java.math.BigDecimal
 
 @Preview(showBackground = true)
 @Composable
-fun CreateNewDessertScreen(dessertViewModel: DessertViewModel = hiltViewModel()){
+fun CreateNewDessertScreen(dessertViewModel: DessertViewModel = hiltViewModel()) {
     val nameState = remember { mutableStateOf("") }
-    val  descriptionState = remember { mutableStateOf("") }
-    val  unitAvailableState = remember { mutableIntStateOf(0) }
-    val  priceState = remember { mutableStateOf(BigDecimal.ZERO) }
+    val descriptionState = remember { mutableStateOf("") }
+    val unitAvailableState = remember { mutableIntStateOf(0) }
+    val priceState = remember { mutableStateOf(BigDecimal.ZERO) }
 
     val saveUiState by dessertViewModel.saveUiState.collectAsStateWithLifecycle()
 
+    val showDialog = remember { mutableStateOf(true) }
+
     Scaffold(
-        topBar = {BakeryTopAppBar("Crear Nuevo Postre")}
-    ){paddingValues ->
+        topBar = { BakeryTopAppBar("Crear Nuevo Postre") }
+    ) { paddingValues ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(paddingValues)
-        ){
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
 
 
             Column(
@@ -69,16 +73,26 @@ fun CreateNewDessertScreen(dessertViewModel: DessertViewModel = hiltViewModel())
 
                 OutlinedTextField(
                     value = unitAvailableState.intValue.toString(),
-                    onValueChange = { value:String -> if(value.isDigitsOnly()) unitAvailableState.intValue = value.toInt() else unitAvailableState.value = 0 },
+                    onValueChange = {
+                        if(it.isNotEmpty()){
+                            unitAvailableState.value = it.toInt()
+                        }else{
+                            unitAvailableState.value = 0
+                        }
+                    },
                     label = { Text(text = "Unidades disponibles") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-
                 )
 
                 OutlinedTextField(
                     value = priceState.value.toString(),
-                    onValueChange = { if(it.isDigitsOnly() || it.equals(".")) priceState.value = it.toBigDecimal() else priceState.value =
-                        BigDecimal.ZERO },
+                    onValueChange = {
+                        if(it.isNotEmpty()){
+                            priceState.value = it.toBigDecimal()
+                        } else{
+                            priceState.value = BigDecimal.ZERO
+                        }
+                    },
                     label = { Text(text = "Precio unitario del postre") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                 )
@@ -86,21 +100,34 @@ fun CreateNewDessertScreen(dessertViewModel: DessertViewModel = hiltViewModel())
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
-                    onClick = { dessertViewModel.saveNewDessert(
-                        nameState.value,
-                        descriptionState.value,
-                        unitAvailableState.value,
-                        priceState.value) }
+                    onClick = {
+                        dessertViewModel.saveNewDessert(
+                            nameState.value,
+                            descriptionState.value,
+                            unitAvailableState.value,
+                            priceState.value
+                        )
+                    }
                 ) {
                     Text(text = "Guardar este nuevo postre")
                 }
             }
 
-            when(val resource = saveUiState.saveUiResource){
-                is SaveResource.Error -> DialogError({}, "Ocurrio un problema, no se pudo guardar el postre")
-                SaveResource.Loading -> LoadingProgress()
-                SaveResource.Success -> DialogSuccess({}, "Guardado correctamente")
-            }
+
+        }
+        when (val resource = saveUiState.saveUiResource) {
+            is SaveResource.Error -> DialogError(
+                { showDialog.value = false },
+                "Ocurrio un problema, no se pudo guardar el postre",
+                showDialog.value
+            )
+
+            SaveResource.Loading -> LoadingProgress()
+            SaveResource.Success -> DialogSuccess(
+                { showDialog.value = false },
+                "Guardado correctamente",
+                showDialog.value
+            )
         }
     }
 }

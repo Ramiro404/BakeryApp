@@ -1,5 +1,6 @@
 package com.ramir.bakeryapp.ui.view
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,24 +22,45 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramir.bakeryapp.R
 import com.ramir.bakeryapp.domain.model.AdditionalIngredient
 import com.ramir.bakeryapp.domain.model.AdditionalIngredientListUiState
+import com.ramir.bakeryapp.domain.model.SaveUiState
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
 import com.ramir.bakeryapp.ui.components.DialogError
+import com.ramir.bakeryapp.ui.components.DialogSuccess
 import com.ramir.bakeryapp.ui.components.LoadingProgress
 import com.ramir.bakeryapp.ui.viewmodel.AdditionalIngredientViewModel
 import com.ramir.bakeryapp.utils.Resource
+import com.ramir.bakeryapp.utils.SaveResource
+import java.math.BigDecimal
 
 @Composable
 fun EditAdditionalIngredient(additionalIngredientViewModel: AdditionalIngredientViewModel = hiltViewModel()) {
     val additionalIngredientList by additionalIngredientViewModel.additionalIngredientListUiState.collectAsStateWithLifecycle(
         AdditionalIngredientListUiState()
     )
+    val saveUiState by additionalIngredientViewModel.saveUiState.collectAsStateWithLifecycle(
+        SaveUiState()
+    )
+    val showIngredientDialog = remember { mutableStateOf(false) }
+    val showDialog = remember { mutableStateOf(false) }
+    val quantityAvailable = remember { mutableStateOf(value = 0) }
+    val selectedIngredient = remember {
+        mutableStateOf(
+            value = AdditionalIngredient(
+                0, "", "", 0,
+                BigDecimal.ZERO
+            )
+        )
+    }
     Scaffold(
         topBar = { BakeryTopAppBar("Editar Ingrediente") }
     ) { paddingValues ->
@@ -53,66 +75,95 @@ fun EditAdditionalIngredient(additionalIngredientViewModel: AdditionalIngredient
                 is Resource.Success<List<AdditionalIngredient>> -> {
                     if (resource.data.isNotEmpty()) {
                         LazyVerticalGrid(
-                            columns = GridCells.Fixed(2)
+                            modifier = Modifier.padding(8.dp),
+                            columns = GridCells.Fixed(2),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(resource.data) { item ->
                                 IngredientItemEdit(
-                                    item,
-                                    Modifier.fillMaxWidth(),
-                                    { quantityAvailable ->
-
-                                        additionalIngredientViewModel.updateIngredient(
-                                            item.id,
-                                            item.name,
-                                            item.description,
-                                            quantityAvailable,
-                                            item.price
-                                        )
-                                    })
+                                    item = item,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onOpenDialog = {
+                                        quantityAvailable.value = it.unitAvailable
+                                        selectedIngredient.value = it
+                                        showIngredientDialog.value = true
+                                    }
+                                )
                             }
                         }
+
+
                     } else {
                         DialogError({}, "No hay Ingredientes")
                     }
+
+
                 }
             }
         }
+        if (showIngredientDialog.value) {
+            AddRemoveIngredientDialog(
+                quantity = quantityAvailable.value,
+                onAdd = { quantityAvailable.value++ },
+                onSubstract = { quantityAvailable.value-- },
+                onDismissRequest = { showIngredientDialog.value = false },
+                onSubmit = {
+                    quantityAvailable.value = it
+                    additionalIngredientViewModel.updateIngredient(
+                        selectedIngredient.value.id,
+                        selectedIngredient.value.name,
+                        selectedIngredient.value.description,
+                        unitAvailable = it,
+                        selectedIngredient.value.price
+                    )
+                    showDialog.value = true
+                }
+            )
+            when (val resource = saveUiState.saveUiResource) {
+                is SaveResource.Error -> DialogError(
+                    { showDialog.value = false },
+                    "Ocurrio un error",
+                    showDialog.value
+                )
+
+                SaveResource.Loading -> LoadingProgress()
+                SaveResource.Success -> DialogSuccess({
+                    showDialog.value = false
+                    showIngredientDialog.value = false
+                }, "Se guardo con exito!", showDialog.value)
+            }
+
+        }
     }
+
 }
 
 @Composable
 fun IngredientItemEdit(
     item: AdditionalIngredient,
     modifier: Modifier = Modifier,
-    onSubmit: (quantityAvailable: Int) -> Unit
+    onOpenDialog: (selectedItem: AdditionalIngredient) -> Unit,
 ) {
-    val openDialog = remember { mutableStateOf(false) }
-    val quantityAvailable = remember { mutableStateOf(value = item.unitAvailable) }
+
+
     Card(modifier) {
-        Column {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(text = item.name)
             Text(text = item.description)
-            Text(text = item.unitAvailable.toString())
-            Text(text = item.price.toString())
+            Text(text = "Unidades ${item.unitAvailable}")
+            Text(text = "Precio $ ${item.price}")
             Button(
-                onClick = {
-                    openDialog.value = true
-                }
+                onClick = { onOpenDialog(item) }
             ) {
-                Text(text = "Agregar/Restar iNVERNTARIO")
+                Text(text = "Agregar / Restar Inventario")
             }
         }
     }
 
-    if (openDialog.value) {
-        AddRemoveIngredientDialog(
-            quantity = quantityAvailable.value,
-            onAdd = { quantityAvailable.value++ },
-            onSubstract = { quantityAvailable.value-- },
-            onDismissRequest = { openDialog.value = false },
-            onSubmit = { onSubmit(quantityAvailable.value) }
-        )
-    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -122,37 +173,48 @@ private fun AddRemoveIngredientDialog(
     onAdd: () -> Unit,
     onSubstract: () -> Unit,
     onDismissRequest: () -> Unit,
-    onSubmit: () -> Unit
+    onSubmit: (newQuantity: Int) -> Unit
 ) {
 
-    BasicAlertDialog(
+    Dialog(
         onDismissRequest = { onDismissRequest() },
     ) {
-        Row() {
-            IconButton(
-                onClick = { onAdd() }
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_add),
-                    contentDescription = "Sumar"
-                )
-            }
+                Row() {
+                    IconButton(
+                        onClick = { onSubstract() }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_add),
+                            contentDescription = "Sumar"
+                        )
+                    }
 
-            Text(text = "$quantity")
+                    Text(text = "$quantity")
 
-            IconButton(
-                onClick = { onSubstract() }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_add),
-                    contentDescription = "Restar"
-                )
+                    IconButton(
+                        onClick = { onAdd() }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_add),
+                            contentDescription = "Restar"
+                        )
+                    }
+                }
+                Button(
+                    onClick = { onSubmit(quantity) }
+                ) {
+                    Text(text = "Confirmar")
+                }
             }
         }
-    }
-    Button(
-        onClick = { onSubmit() }
-    ) {
-        Text(text = "Confirmar")
     }
 }

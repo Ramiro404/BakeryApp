@@ -58,6 +58,7 @@ class AdditionalIngredientViewModel @Inject constructor(
     }
 
     fun postIngredient(name: String, description: String, unitAvailable: Int, price: BigDecimal) {
+        _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
         val ingredient = AdditionalIngredient(
             name = name,
             description = description,
@@ -65,7 +66,6 @@ class AdditionalIngredientViewModel @Inject constructor(
             price = price
         )
         viewModelScope.launch {
-            _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
             try{
                 postNewAdditionalIngredient(ingredient)
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
@@ -82,12 +82,13 @@ class AdditionalIngredientViewModel @Inject constructor(
         unitAvailable: Int,
         price: BigDecimal
     ) {
+        _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
         val ingredient = AdditionalIngredient(id, name, description, unitAvailable, price)
         viewModelScope.launch {
-            _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
             try {
                 updateAdditionalIngredient(ingredient)
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
+                getList()
             }catch (e: Exception){
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error")) }
             }

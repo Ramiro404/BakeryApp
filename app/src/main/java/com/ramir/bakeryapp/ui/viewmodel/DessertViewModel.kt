@@ -41,9 +41,9 @@ class DessertViewModel @Inject constructor(
     }
 
     fun saveNewDessert(name:String, description:String, unitAvailable:Int, price: BigDecimal){
+        _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
         val dessert = Dessert(name= name, description= description, unitAvailable =  unitAvailable, price = price )
         viewModelScope.launch{
-            _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
             try {
                 postNewDessertUseCase(dessert = dessert)
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
