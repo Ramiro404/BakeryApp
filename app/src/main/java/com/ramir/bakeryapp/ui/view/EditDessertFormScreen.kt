@@ -48,7 +48,7 @@ fun EditDessertFormScreen(
     }
 
     Scaffold(
-        topBar = { BakeryTopAppBar("Inventario") }
+        topBar = { BakeryTopAppBar("Editar Ingrediente") }
     ) { paddingValues ->
         Box(modifier = Modifier
             .fillMaxSize()

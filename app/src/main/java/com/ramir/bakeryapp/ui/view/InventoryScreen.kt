@@ -71,7 +71,7 @@ private fun InventoryMenu(
         OutlinedButton(
             onClick = navigateToEditDessert
         ) {
-            Text(text = stringResource(R.string.edit_dessert))
+            Text(text = "Editar Ingrediente")
         }
 
         OutlinedButton(

@@ -1,38 +1,110 @@
 package com.ramir.bakeryapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.ramir.bakeryapp.data.database.relations.CartItemDetails
+import com.ramir.bakeryapp.domain.Cart.DeleteAllCartIngredientDessert
+import com.ramir.bakeryapp.domain.Cart.GetAllCartIngredientDessert
+import com.ramir.bakeryapp.domain.Cart.PostCartIngredientDessert
 import com.ramir.bakeryapp.domain.model.Cart
+import com.ramir.bakeryapp.domain.model.CartListUiState
+import com.ramir.bakeryapp.domain.model.SaveUiState
+import com.ramir.bakeryapp.utils.Resource
+import com.ramir.bakeryapp.utils.SaveResource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 @HiltViewModel
-class CartViewModel @Inject constructor(): ViewModel(){
-    private val _cart = MutableStateFlow<List<Cart>>(emptyList())
-    val cart: Flow<List<Cart>> = _cart.asStateFlow()
+class CartViewModel @Inject constructor(
+    private val getAllCartIngredientDessert: GetAllCartIngredientDessert,
+    private val postCartIngredientDessert: PostCartIngredientDessert,
+    private val deleteAllCartIngredientDessert: DeleteAllCartIngredientDessert
+): ViewModel(){
+    private val _cart = MutableStateFlow(CartListUiState())
+    val cart: StateFlow<CartListUiState> = _cart.asStateFlow()
 
+    private val _saveUiState = MutableStateFlow(SaveUiState())
+    val saveUiState: StateFlow<SaveUiState> = _saveUiState.asStateFlow()
 
-    fun addItemToCart(newCart: Cart){
-        _cart.value += newCart
-
+    init {
+        getAllCart()
     }
 
-    fun removeItemFromCart(index: Int){
-        val currentList = _cart.value
-        if(index < 0 || index >= currentList.size){
-            return
-        }
-        _cart.value = currentList.toMutableList().apply {
-            removeAt(index)
+    private fun getAllCart(){
+        _cart.update { it.copy(cartList = Resource.Loading) }
+        viewModelScope.launch {
+            try {
+                val result = getAllCartIngredientDessert()
+                _cart.update { it.copy(cartList = Resource.Success(result)) }
+            }catch (e: Exception){
+                _cart.update { it.copy(cartList = Resource.Error("Ocurrio un error")) }
+            }
         }
     }
 
-    fun getCart(){
+     fun postCart(id:Int, dessertId:Int, additionalIngredientId: Int, additionalIngredientQuantity:Int, total: BigDecimal){
+        _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
+        val cart = Cart(id,dessertId,additionalIngredientId,additionalIngredientQuantity, total)
+        viewModelScope.launch {
+            try {
+                postCartIngredientDessert(cart)
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
+            }catch (e: Exception){
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error")) }
+            }
+        }
+    }
 
+     fun deleteAllCart(){
+        _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
+        viewModelScope.launch {
+            try {
+                deleteAllCartIngredientDessert()
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
+            }catch (e: Exception){
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error")) }
+            }
+        }
+    }
+
+    fun addIngredientToCart(index:Int){
+        val currentCartList = _cart.value.cartList
+        when(currentCartList) {
+            is Resource.Error -> TODO()
+            Resource.Loading -> TODO()
+            is Resource.Success<List<CartItemDetails>> -> {
+                val updatedItems = currentCartList.data.mapIndexedNotNull { i, item ->
+                    if(i == index){
+                        item.cartItem.copy(additionalIngredientQuantity = (item.cartItem.additionalIngredientQuantity + 1))
+                    }
+                }
+
+            }
+        }
+    }
+
+    fun substractIngredientToCart(index:Int){
+        val currentCartList = _cart.value.cartList
+        when(currentCartList) {
+            is Resource.Error -> TODO()
+            Resource.Loading -> TODO()
+            is Resource.Success<List<CartItemDetails>> -> {
+                val updatedItems = currentCartList.data.mapIndexedNotNull { i, item ->
+                    if(i == index){
+                        item.cartItem.copy(additionalIngredientQuantity = (item.cartItem.additionalIngredientQuantity + 1))
+                    }
+                }
+
+            }
+        }
     }
 
 }

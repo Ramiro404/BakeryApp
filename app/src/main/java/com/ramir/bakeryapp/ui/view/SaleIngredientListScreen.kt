@@ -1,19 +1,17 @@
 package com.ramir.bakeryapp.ui.view
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -24,19 +22,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramir.bakeryapp.R
+import com.ramir.bakeryapp.data.database.relations.CartItemDetails
 import com.ramir.bakeryapp.domain.model.AdditionalIngredient
 import com.ramir.bakeryapp.domain.model.AdditionalIngredientListUiState
-import com.ramir.bakeryapp.domain.model.IngredientCart
+import com.ramir.bakeryapp.domain.model.CartListUiState
+import com.ramir.bakeryapp.domain.model.toDomain
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
 import com.ramir.bakeryapp.ui.components.DialogError
 import com.ramir.bakeryapp.ui.components.LoadingProgress
 import com.ramir.bakeryapp.ui.viewmodel.AdditionalIngredientViewModel
 import com.ramir.bakeryapp.ui.viewmodel.CartViewModel
 import com.ramir.bakeryapp.utils.Resource
-import kotlin.collections.mutableListOf
 
 @Composable
 fun SaleIngredientListSale(
@@ -46,10 +46,9 @@ fun SaleIngredientListSale(
     navigateToSaleDessertList: () -> Unit
     ){
     val additionalIngredientList by additionalIngredientViewModel.additionalIngredientListUiState.collectAsStateWithLifecycle(initialValue = AdditionalIngredientListUiState())
-    val cartList by cartViewModel.cart.collectAsStateWithLifecycle(initialValue = emptyList())
+    val cartListUiState by cartViewModel.cart.collectAsStateWithLifecycle(initialValue = CartListUiState())
     var showDialog = remember{ mutableStateOf(false) }
     var quantity = remember { mutableStateOf(0) }
-    var ingredientCartList = remember { mutableListOf<IngredientCart>() }
 
     Scaffold(
         topBar = {BakeryTopAppBar("Selecciona los ingredientes")}
@@ -57,118 +56,66 @@ fun SaleIngredientListSale(
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ){
-            when(val resource = additionalIngredientList.additionalIngredientList) {
+            when(val resource = cartListUiState.cartList) {
                 is Resource.Error -> DialogError({}, resource.message)
                 Resource.Loading -> LoadingProgress()
-                is Resource.Success<List<AdditionalIngredient>> -> {
+                is Resource.Success<List<CartItemDetails>> -> {
                     if(resource.data.isNotEmpty()){
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(2)
-                        ) {
-                            items(resource.data){ item ->
+                        LazyColumn() {
+                            itemsIndexed(resource.data){ index,item ->
                                 IngredientItem(
-                                    item,
-                                    Modifier.fillMaxWidth().clickable{ showDialog.value = true },
-                                    showDialog.value,
-                                    quantity= quantity.value,
-                                    onAdd = { quantity.value++ },
-                                    onSubstract = { quantity.value-- },
-                                    onSubmit = {
-                                        val ingredientCart = IngredientCart(item, quantity.value)
-                                        ingredientCartList.add(ingredientCart)
-                                    },
-                                    onDismissRequest = { showDialog.value = false })
-                            }
-                        }
-                        Row(modifier = Modifier.fillMaxWidth()){
-                            Button(
-                                onClick = {
-                                    navigateToSaleDessertList()
-                                }) {
-                                Text(text = "Agregar otro postre")
-                            }
-                        }
+                                    ingredient = item.additionalIngredient.toDomain(),
+                                    modifier = Modifier.fillMaxWidth(),
+                                    quantity = item.cartItem.additionalIngredientQuantity,
+                                    onAdd={ cartViewModel.addIngredientToCart(index)},
+                                    onSubstract={ cartViewModel.substractIngredientToCart(index)})
 
+                            }
+                        }
                     }else{
                         DialogError({}, "No hay ingredientes")
                     }
                 }
             }
-
         }
     }
 }
 
-@Composable
-private fun IngredientItem(
-    item: AdditionalIngredient,
-    modifier: Modifier =  Modifier,
-    showDialog: Boolean,
+@Composable fun IngredientItem(
+    ingredient: AdditionalIngredient,
+    modifier: Modifier = Modifier,
     quantity:Int,
-    onAdd: () -> Unit,
-    onSubstract: () -> Unit,
-    onSubmit: () -> Unit,
-    onDismissRequest: () -> Unit){
+    onAdd: () ->Unit,
+    onSubstract: ()->Unit
+){
     Card(modifier) {
-        Column {
-            Text(text = item.name)
-            Text(text = item.description)
-            Text(text = item.unitAvailable.toString())
-            Text(text = item.price.toString())
+        Column(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
+            Text(text = ingredient.name)
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(text = "Disponible: ${ingredient.unitAvailable}")
 
-        }
-    }
-
-    if(showDialog){
-        AddRemoveIngredientDialog(
-            quantity,
-            onAdd,
-            onSubstract,
-            onDismissRequest,
-            onSubmit
-        )
-    }
-}
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun AddRemoveIngredientDialog(
-    quantity: Int,
-    onAdd: () -> Unit,
-    onSubstract: () -> Unit,
-    onDismissRequest: () -> Unit,
-    onSubmit: () -> Unit){
-
-    BasicAlertDialog(
-        onDismissRequest = {onDismissRequest()},
-    ) {
-        Row() {
-            IconButton(
-                onClick = { onAdd() }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_add),
-                    contentDescription = "Sumar"
-                )
-            }
-
-            Text(text = "$quantity")
-
-            IconButton(
-                onClick = { onSubstract() }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_add),
-                    contentDescription = "Restar"
-                )
+                Row() {
+                    IconButton(
+                        onClick = onSubstract
+                    ) {
+                        Icon(
+                            painter =painterResource(R.drawable.ic_substract_check),
+                            contentDescription = "Minus"
+                        )
+                    }
+                    Spacer(Modifier.width(5.dp))
+                    Text(text =quantity.toString() )
+                    Spacer(Modifier.width(5.dp))
+                    IconButton(
+                        onClick = onAdd
+                    ) {
+                        Icon(
+                            painter =painterResource(R.drawable.ic_add),
+                            contentDescription = "Minus"
+                        )
+                    }
+                }
             }
         }
-    }
-    Button(
-        onClick = { onSubmit() }
-    ) {
-        Text(text = "Confirmar")
     }
 }

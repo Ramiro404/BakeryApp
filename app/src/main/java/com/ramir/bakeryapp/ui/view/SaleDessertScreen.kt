@@ -49,10 +49,8 @@ fun SaleDessertScreen(
                     }
                 }
             }
-
         }
     }
-
 }
 
 @Composable

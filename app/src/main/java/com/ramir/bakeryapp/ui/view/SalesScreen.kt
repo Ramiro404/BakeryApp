@@ -35,7 +35,7 @@ fun SalesMenu(
 ){
     Column() {
         OutlinedButton(
-            onClick = {  }
+            onClick = navigateToSaleDessertList
         ) {
             Text(text = "Realizar una nueva venta")
         }

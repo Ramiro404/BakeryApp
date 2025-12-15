@@ -48,5 +48,9 @@ object RoomModule {
     @Provides
     fun provideAdditionalIngredientDao(db: BakeryDatabase) = db.getAdditionalIngredientDao()
 
+    @Singleton
+    @Provides
+    fun provideCartIngredientDessertDao(db: BakeryDatabase) = db.getCartIngredientDessertDao()
+
 
 }
