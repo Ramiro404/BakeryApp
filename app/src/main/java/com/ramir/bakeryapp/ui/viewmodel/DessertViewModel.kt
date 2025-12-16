@@ -1,5 +1,6 @@
 package com.ramir.bakeryapp.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ramir.bakeryapp.domain.dessert.GetAllDessertsUseCase
@@ -48,6 +49,7 @@ class DessertViewModel @Inject constructor(
                 postNewDessertUseCase(dessert = dessert)
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
             }catch (e: Exception){
+                Log.e("ERROR", e.message.toString())
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Error(message = e.message.toString())) }
             }
 
@@ -60,8 +62,10 @@ class DessertViewModel @Inject constructor(
             _dessertListUiState.update { it.copy(dessertListUiState = Resource.Loading) }
             try{
                 val result = getAllDessertsUseCase()
+                Log.i("RESULTADO", result.toString())
                 _dessertListUiState.update { it.copy(dessertListUiState = Resource.Success(data = result)) }
             }catch (e: Exception){
+                Log.e("ERROR", e.message.toString())
                 _dessertListUiState.update { it.copy(dessertListUiState = Resource.Error("Ocurrio un error ${e.message}")) }
             }
 
@@ -75,6 +79,7 @@ class DessertViewModel @Inject constructor(
                 val result = getDessertByIdUseCase(id)
                 _dessertUiState.update { it.copy(dessertResource = Resource.Success(result) as Resource<Dessert>) }
             }catch (e: Exception){
+                Log.e("ERROR", e.message.toString())
                 _dessertUiState.update { it.copy(dessertResource = Resource.Error("Ocurrio un error ${e.message}")) }
             }
         }

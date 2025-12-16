@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramir.bakeryapp.domain.model.Dessert
@@ -46,7 +47,7 @@ fun ListDessertScreen(
                     if(resource.data.isNotEmpty()){
                         DessertList(resource.data)
                     }else{
-                        Text(text = "No hay articulos en este momento")
+                        Text(text = "No hay articulos en este momento", fontSize = 48.sp)
                     }
                 }
             }

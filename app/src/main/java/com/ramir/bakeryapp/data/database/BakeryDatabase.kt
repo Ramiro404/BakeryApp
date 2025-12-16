@@ -12,7 +12,6 @@ import com.ramir.bakeryapp.data.database.dao.OrderDao
 import com.ramir.bakeryapp.data.database.dao.OrderDessertDao
 import com.ramir.bakeryapp.data.database.entities.AdditionalIngredientEntity
 import com.ramir.bakeryapp.data.database.entities.CartIngredientDessertEntity
-import com.ramir.bakeryapp.data.database.entities.CartItem
 import com.ramir.bakeryapp.data.database.entities.CustomerEntity
 import com.ramir.bakeryapp.data.database.entities.DessertAdditionalIngredientEntity
 import com.ramir.bakeryapp.data.database.entities.DessertEntity
@@ -26,7 +25,7 @@ import com.ramir.bakeryapp.utils.LocalDateTimeConverter
     entities = [
         DessertEntity::class, OrderEntity::class,
         AdditionalIngredientEntity::class, CustomerEntity::class,
-        OrderDessertEntity::class, DessertAdditionalIngredientEntity::class, CartIngredientDessertEntity::class, CartItem::class], version = 1)
+        OrderDessertEntity::class, DessertAdditionalIngredientEntity::class, CartIngredientDessertEntity::class], version = 2)
 @TypeConverters(BigDecimalConverter::class, LocalDateTimeConverter::class)
 abstract class BakeryDatabase: RoomDatabase(){
 

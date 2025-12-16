@@ -21,7 +21,9 @@ object RoomModule {
         Room.databaseBuilder(
             context,
             BakeryDatabase::class.java,
-            BAKERY_DATABASE_NAME)
+            BAKERY_DATABASE_NAME
+        )
+            .fallbackToDestructiveMigration(true)
             .build()
 
     @Singleton

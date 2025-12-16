@@ -1,5 +1,6 @@
 package com.ramir.bakeryapp.ui.view
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -158,12 +159,14 @@ private fun AppNavHost(
                 route= NavDestination.SaleIngredientList,
                 arguments = listOf(
                     navArgument("dessertId"){
-                        type = NavType.IntType
+                        type = NavType.StringType
                     }
                 )
             ){ backStackEntry ->
-                val id = backStackEntry.arguments?.getInt("dessertId")
+                val id = backStackEntry.arguments?.getString("dessertId")
+                Log.i("NAVEGA","$id")
                 if(id != null){
+
                     SaleIngredientListSale(dessertId = id, navigateToSaleDessertList = { navController.popBackStack()})
                 }
             }

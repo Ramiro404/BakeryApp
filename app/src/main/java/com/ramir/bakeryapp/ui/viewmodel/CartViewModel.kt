@@ -1,5 +1,6 @@
 package com.ramir.bakeryapp.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ramir.bakeryapp.data.database.relations.CartItemDetails
@@ -43,8 +44,10 @@ class CartViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val result = getAllCartIngredientDessert()
+                Log.i("RESULTADO",result.toString())
                 _cart.update { it.copy(cartList = Resource.Success(result)) }
             }catch (e: Exception){
+                Log.e("ERROR", e.message.toString())
                 _cart.update { it.copy(cartList = Resource.Error("Ocurrio un error")) }
             }
         }
@@ -58,6 +61,7 @@ class CartViewModel @Inject constructor(
                 postCartIngredientDessert(cart)
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
             }catch (e: Exception){
+                Log.e("ERROR", e.message.toString())
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error")) }
             }
         }
@@ -70,6 +74,7 @@ class CartViewModel @Inject constructor(
                 deleteAllCartIngredientDessert()
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
             }catch (e: Exception){
+                Log.e("ERROR", e.message.toString())
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error")) }
             }
         }

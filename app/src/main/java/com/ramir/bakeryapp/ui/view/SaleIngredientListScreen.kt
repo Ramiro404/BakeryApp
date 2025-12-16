@@ -40,7 +40,7 @@ import com.ramir.bakeryapp.utils.Resource
 
 @Composable
 fun SaleIngredientListSale(
-    dessertId:Int,
+    dessertId:String,
     additionalIngredientViewModel: AdditionalIngredientViewModel = hiltViewModel(),
     cartViewModel: CartViewModel = hiltViewModel(),
     navigateToSaleDessertList: () -> Unit
@@ -69,7 +69,6 @@ fun SaleIngredientListSale(
                                     quantity = item.cartItem.additionalIngredientQuantity,
                                     onAdd={ cartViewModel.addIngredientToCart(index)},
                                     onSubstract={ cartViewModel.substractIngredientToCart(index)})
-
                             }
                         }
                     }else{

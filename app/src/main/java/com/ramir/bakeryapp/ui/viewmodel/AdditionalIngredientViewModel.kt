@@ -1,5 +1,6 @@
 package com.ramir.bakeryapp.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ramir.bakeryapp.domain.additionalIngredient.GetAllIAdditionalngredientsUseCase
@@ -46,6 +47,7 @@ class AdditionalIngredientViewModel @Inject constructor(
                     it.copy(additionalIngredientList = Resource.Success(data = result))
                 }
             } catch (e: Exception) {
+                Log.e("ERROR", e.message.toString())
                 _additionalIngredientListUiState.update {
                     it.copy(
                         additionalIngredientList = Resource.Error(
@@ -70,6 +72,7 @@ class AdditionalIngredientViewModel @Inject constructor(
                 postNewAdditionalIngredient(ingredient)
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
             }catch (e: Exception){
+                Log.e("ERROR", e.message.toString())
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error")) }
             }
         }
@@ -90,6 +93,7 @@ class AdditionalIngredientViewModel @Inject constructor(
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
                 getList()
             }catch (e: Exception){
+                Log.e("ERROR", e.message.toString())
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error")) }
             }
         }
