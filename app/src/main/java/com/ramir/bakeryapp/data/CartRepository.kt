@@ -1,5 +1,6 @@
 package com.ramir.bakeryapp.data
 
+import android.util.Log
 import com.ramir.bakeryapp.data.database.dao.CartIngredientDessertDao
 import com.ramir.bakeryapp.data.database.entities.CartIngredientDessertEntity
 import com.ramir.bakeryapp.data.database.entities.toDomain
@@ -12,7 +13,9 @@ class CartRepository @Inject constructor(
     private val cartDao: CartIngredientDessertDao
 ){
     suspend fun getAll(): List<CartItemDetails>{
-        return cartDao.getAllCartIngredientsDessert()
+        val result = cartDao.getAllCartIngredientsDessert()
+        Log.i("CartRepo",result.toString())
+        return result
     }
 
     suspend fun insertCartItem(cartItem: Cart){

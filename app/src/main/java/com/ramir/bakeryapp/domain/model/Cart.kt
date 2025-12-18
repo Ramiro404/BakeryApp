@@ -19,3 +19,15 @@ fun Cart.toEntity() = CartIngredientDessertEntity(id,dessertId,additionalIngredi
 data class CartListUiState(
     val cartList: Resource<List<CartItemDetails>> = Resource.Loading
 )
+
+data class CartIngredientView(
+    val additionalIngredientId:Int,
+    val additionalIngredientQuantity:Int,
+)
+
+data class CartView(
+    val id:Int,
+    val dessertId:Int,
+    val total: BigDecimal,
+    val ingredients: List<CartIngredientView>
+)

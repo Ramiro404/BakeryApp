@@ -167,9 +167,17 @@ private fun AppNavHost(
                 Log.i("NAVEGA","$id")
                 if(id != null){
 
-                    SaleIngredientListSale(dessertId = id, navigateToSaleDessertList = { navController.popBackStack()})
+                    SaleIngredientListSale(
+                        dessertId = id,
+                        navigateToSaleDessertList = { navController.popBackStack()},
+                        navigateToPayment = { navController.navigate(NavDestination.PaymentList)})
                 }
             }
+
+            composable(
+                route = NavDestination.PaymentList,
+                content = { PaymentSaleScreen() }
+            )
         }
     }
 }

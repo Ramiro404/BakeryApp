@@ -12,6 +12,7 @@ hilt = "2.57.2"
 retrofit = "2.9.0"
 coilCompose = "2.6.0"
 hiltNavigationCompose = "1.3.0"
+roomKtx = "2.8.4"
 
 
 [libraries]
@@ -35,6 +36,7 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose"
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 dagger-hilt-navigation = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 
 
 [plugins]

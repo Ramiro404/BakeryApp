@@ -57,6 +57,7 @@ dependencies {
 
     implementation(libs.dagger.hilt)
     implementation(libs.dagger.hilt.navigation)
+    implementation(libs.androidx.room.ktx)
     kapt(libs.dagger.hilt.compiler)
     implementation(libs.coil.compose)
 

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,6 +31,8 @@ import com.ramir.bakeryapp.R
 import com.ramir.bakeryapp.data.database.relations.CartItemDetails
 import com.ramir.bakeryapp.domain.model.AdditionalIngredient
 import com.ramir.bakeryapp.domain.model.AdditionalIngredientListUiState
+import com.ramir.bakeryapp.domain.model.AdditionalIngredientWithQuantity
+import com.ramir.bakeryapp.domain.model.AdditionalIngredientWithQuantityListUiState
 import com.ramir.bakeryapp.domain.model.CartListUiState
 import com.ramir.bakeryapp.domain.model.toDomain
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
@@ -38,40 +42,97 @@ import com.ramir.bakeryapp.ui.viewmodel.AdditionalIngredientViewModel
 import com.ramir.bakeryapp.ui.viewmodel.CartViewModel
 import com.ramir.bakeryapp.utils.Resource
 
+@Preview(showBackground = true)
 @Composable
 fun SaleIngredientListSale(
-    dessertId:String,
+    dessertId: String ="0",
     additionalIngredientViewModel: AdditionalIngredientViewModel = hiltViewModel(),
     cartViewModel: CartViewModel = hiltViewModel(),
-    navigateToSaleDessertList: () -> Unit
-    ){
-    val additionalIngredientList by additionalIngredientViewModel.additionalIngredientListUiState.collectAsStateWithLifecycle(initialValue = AdditionalIngredientListUiState())
+    navigateToSaleDessertList: () -> Unit = {},
+    navigateToPayment: () -> Unit = {}
+) {
+    val additionalIngredientWithQuantityList by additionalIngredientViewModel.additionalIngredientWithQuantityListUiState.collectAsStateWithLifecycle(
+        initialValue = AdditionalIngredientWithQuantityListUiState()
+    )
     val cartListUiState by cartViewModel.cart.collectAsStateWithLifecycle(initialValue = CartListUiState())
-    var showDialog = remember{ mutableStateOf(false) }
+    var showDialog = remember { mutableStateOf(false) }
     var quantity = remember { mutableStateOf(0) }
 
     Scaffold(
-        topBar = {BakeryTopAppBar("Selecciona los ingredientes")}
+        topBar = { BakeryTopAppBar("Selecciona los ingredientes") }
     ) { paddingValues ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(paddingValues)
-        ){
-            when(val resource = cartListUiState.cartList) {
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            when (val resource = additionalIngredientWithQuantityList.ingredientResource) {
                 is Resource.Error -> DialogError({}, resource.message)
                 Resource.Loading -> LoadingProgress()
-                is Resource.Success<List<CartItemDetails>> -> {
-                    if(resource.data.isNotEmpty()){
-                        LazyColumn() {
-                            itemsIndexed(resource.data){ index,item ->
-                                IngredientItem(
-                                    ingredient = item.additionalIngredient.toDomain(),
-                                    modifier = Modifier.fillMaxWidth(),
-                                    quantity = item.cartItem.additionalIngredientQuantity,
-                                    onAdd={ cartViewModel.addIngredientToCart(index)},
-                                    onSubstract={ cartViewModel.substractIngredientToCart(index)})
+                is Resource.Success<List<AdditionalIngredientWithQuantity>> -> {
+                    if (resource.data.isNotEmpty()) {
+                            LazyColumn() {
+                                itemsIndexed(resource.data) { index, item ->
+                                    IngredientItem(
+                                        ingredient = item.ingredient,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        quantity = item.quantity,
+                                        onAdd = {
+                                            additionalIngredientViewModel.addIngredientToCart(
+                                                index
+                                            )
+                                        },
+                                        onSubstract = {
+                                            additionalIngredientViewModel.substractIngredientToCart(
+                                                index
+                                            )
+                                        })
+                                }
+
                             }
-                        }
-                    }else{
+                            Row(Modifier.fillMaxWidth()) {
+                                Button(
+                                    modifier = Modifier.weight(1f),
+                                    onClick =  {
+                                        resource.data.forEach {
+                                            if (it.quantity > 0) {
+                                                val total =
+                                                    it.ingredient.price * it.quantity.toBigDecimal()
+                                                cartViewModel.postCart(
+                                                    0,
+                                                    dessertId.toInt(),
+                                                    it.ingredient.id,
+                                                    it.quantity,
+                                                    total
+                                                )
+                                            }
+                                        }
+                                        navigateToSaleDessertList()
+                                    }
+                                ) {
+                                    Text(text = "Agregar otro postre")
+                                }
+                                Button(modifier = Modifier.weight(1f), onClick = {
+                                    resource.data.forEach {
+                                        if (it.quantity > 0) {
+                                            val total =
+                                                it.ingredient.price * it.quantity.toBigDecimal()
+                                            cartViewModel.postCart(
+                                                0,
+                                                dessertId.toInt(),
+                                                it.ingredient.id,
+                                                it.quantity,
+                                                total
+                                            )
+                                        }
+                                    }
+                                    navigateToPayment()
+
+                                }) {
+                                    Text(text = "Proceder al pago")
+                                }
+                            }
+                    } else {
                         DialogError({}, "No hay ingredientes")
                     }
                 }
@@ -80,17 +141,23 @@ fun SaleIngredientListSale(
     }
 }
 
-@Composable fun IngredientItem(
+@Composable
+fun IngredientItem(
     ingredient: AdditionalIngredient,
     modifier: Modifier = Modifier,
-    quantity:Int,
-    onAdd: () ->Unit,
-    onSubstract: ()->Unit
-){
+    quantity: Int,
+    onAdd: () -> Unit,
+    onSubstract: () -> Unit
+) {
     Card(modifier) {
-        Column(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
+        Column(modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()) {
             Text(text = ingredient.name)
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(text = "Disponible: ${ingredient.unitAvailable}")
 
                 Row() {
@@ -98,18 +165,18 @@ fun SaleIngredientListSale(
                         onClick = onSubstract
                     ) {
                         Icon(
-                            painter =painterResource(R.drawable.ic_substract_check),
+                            painter = painterResource(R.drawable.ic_substract_check),
                             contentDescription = "Minus"
                         )
                     }
                     Spacer(Modifier.width(5.dp))
-                    Text(text =quantity.toString() )
+                    Text(text = quantity.toString())
                     Spacer(Modifier.width(5.dp))
                     IconButton(
                         onClick = onAdd
                     ) {
                         Icon(
-                            painter =painterResource(R.drawable.ic_add),
+                            painter = painterResource(R.drawable.ic_add),
                             contentDescription = "Minus"
                         )
                     }
