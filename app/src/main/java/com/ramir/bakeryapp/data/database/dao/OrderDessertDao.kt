@@ -15,6 +15,6 @@ interface OrderDessertDao {
     suspend fun getAllAdditionalIngredient(orderId: Int): List<OrderDessertEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAdditionalIngredient(orderDessertEntity: List<OrderDessertEntity>): Unit
+    suspend fun insertAdditionalIngredient(orderDessertEntity: List<OrderDessertEntity>)
 
 }

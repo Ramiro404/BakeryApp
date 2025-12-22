@@ -15,7 +15,7 @@ interface OrderDao {
     suspend fun getOrderById(id: Int): OrderEntity?
 
     @Insert
-    suspend fun insertOrder(orderEntity: OrderEntity): Unit
+    suspend fun insertOrder(orderEntity: OrderEntity): Long
 
     @Update
     suspend fun updateOrder(orderEntity: OrderEntity): Int

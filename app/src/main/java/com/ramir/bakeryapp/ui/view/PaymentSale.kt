@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,20 +17,28 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramir.bakeryapp.data.database.relations.CartItemDetails
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
 import com.ramir.bakeryapp.ui.components.DialogError
+import com.ramir.bakeryapp.ui.components.DialogSuccess
 import com.ramir.bakeryapp.ui.components.LoadingProgress
 import com.ramir.bakeryapp.ui.viewmodel.CartViewModel
 import com.ramir.bakeryapp.utils.Resource
+import com.ramir.bakeryapp.utils.SaveResource
 import java.math.BigDecimal
 
 @Composable
 fun PaymentSaleScreen(cartViewModel: CartViewModel = hiltViewModel()){
     val cartList by cartViewModel.cart.collectAsStateWithLifecycle()
+    val saveUiState by cartViewModel.saveUiState.collectAsStateWithLifecycle()
+    var quantityPaid by rememberSaveable { mutableStateOf(BigDecimal.ZERO) }
+    var changeToReturn by rememberSaveable { mutableStateOf(BigDecimal.ZERO)}
+    var showDialog by rememberSaveable { mutableStateOf(false) }
     Scaffold(
         topBar = { BakeryTopAppBar("Confirmar pago") }
     ) { paddingValues ->
@@ -46,20 +55,58 @@ fun PaymentSaleScreen(cartViewModel: CartViewModel = hiltViewModel()){
                         }
                     }
 
-                    PaymentSaleContentent(resource.data, totalToPay.value)
-                    Button(onClick = {}) {
-                        Text(text = "Confirmar")
+                    PaymentSaleContentent(
+                        resource.data,
+                        totalToPay.value,
+                        quantityPaid.toString(),
+                        {
+                            quantityPaid = it
+                            changeToReturn = totalToPay.value - quantityPaid
+                        },
+                        changeToReturn.toString())
+                    Button(onClick = {
+                        cartViewModel.makePurchase()
+                    }) {
+                        Text(text = "Confirmar compra")
                     }
                 }
+            }
+
+            when (val resource = saveUiState.saveUiResource) {
+                is SaveResource.Error -> DialogError(
+                    { showDialog = false },
+                    "Ocurrio un problema, no se pudo guardar el postre",
+                    showDialog
+                )
+
+                SaveResource.Loading -> LoadingProgress()
+                SaveResource.Success -> DialogSuccess(
+                    { showDialog = false },
+                    "Guardado correctamente",
+                    showDialog
+                )
             }
         }
     }
 }
 
 @Composable
-fun PaymentSaleContentent(cartList: List<CartItemDetails>,  totalToPay: BigDecimal){
+fun PaymentSaleContentent(
+    cartList: List<CartItemDetails>,
+    totalToPay: BigDecimal,
+    quantityPaid: String,
+    onQuantityPaid: (BigDecimal) -> Unit,
+    changeToReturn: String){
 
     Column(modifier = Modifier.fillMaxWidth()) {
+        Row {
+            Text(text = "Postre", modifier = Modifier.weight(1f))
+            Text(text = "Precio del Postre", modifier = Modifier.weight(1f))
+            Text(text = "Ingrediente", modifier = Modifier.weight(1f))
+            Text(text = "Precio del ingrediente", modifier = Modifier.weight(1f))
+            Text(text = "Cantidad de ingrediente", modifier = Modifier.weight(1f))
+            Text(text = "Costo", modifier = Modifier.weight(1f))
+        }
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
             itemsIndexed(cartList){index, item ->
                 Row {
@@ -67,13 +114,18 @@ fun PaymentSaleContentent(cartList: List<CartItemDetails>,  totalToPay: BigDecim
                     Text(text = item.dessert.price.toString(), modifier = Modifier.weight(1f))
                     Text(text = item.additionalIngredient.name, modifier = Modifier.weight(1f))
                     Text(text = item.additionalIngredient.price.toString(), modifier = Modifier.weight(1f))
-                    Text(text = item.additionalIngredient.name, modifier = Modifier.weight(1f))
                     Text(text = item.cartItem.additionalIngredientQuantity.toString(), modifier = Modifier.weight(1f))
                     Text(text = item.cartItem.total.toString(), modifier = Modifier.weight(1f))
-
                 }
             }
         }
-        Text(text = "Total:: $$totalToPay")
+        Text(text = "Total: $$totalToPay")
+        OutlinedTextField(
+            value = quantityPaid,
+            onValueChange = {onQuantityPaid(it.toBigDecimal()) },
+            label = {Text("Ingrese la cantidad")}
+        )
+        Text("Cambio a regresar al cliente:  $$changeToReturn")
+
     }
 }

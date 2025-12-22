@@ -14,7 +14,9 @@ data class CartIngredientDessertEntity (
     @ColumnInfo(name = "dessert_id") val dessertId: Int = 0,
     @ColumnInfo(name = "additional_ingredient_id") val additionalIngredientId: Int = 0,
     @ColumnInfo(name = "additional_ingredient_quantity") val additionalIngredientQuantity: Int = 0,
-    @ColumnInfo(name = "total") val total: BigDecimal = BigDecimal.ZERO
+    @ColumnInfo(name = "total") val total: BigDecimal = BigDecimal.ZERO,
+    @ColumnInfo(name = "dessert_item_number") val dessertItemNumber: Int = 0,
+
 )
 
 fun CartIngredientDessertEntity.toDomain() = Cart(id, dessertId, additionalIngredientId,additionalIngredientQuantity,total)

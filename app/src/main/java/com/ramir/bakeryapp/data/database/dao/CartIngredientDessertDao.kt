@@ -36,4 +36,7 @@ interface CartIngredientDessertDao {
     @Query("SELECT * FROM additional_ingredient_table WHERE id IN (:ids)")
     suspend fun getIngredientsFromIdList(ids: List<Int>): List<AdditionalIngredientEntity>
 
+    //@Query("Select count(*) FROM cart_dessert_additional_ingredient_entity")
+    //suspend fun getConsecutiveDessertNumber()
+
 }

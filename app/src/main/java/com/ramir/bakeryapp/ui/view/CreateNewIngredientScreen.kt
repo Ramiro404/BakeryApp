@@ -72,11 +72,10 @@ fun CreateNewIngredientScreen(additionalIngredientViewModel: AdditionalIngredien
                 OutlinedTextField(
                     value = unitAvailableState.intValue.toString(),
                     onValueChange = { value: String ->
-                        if (value.isDigitsOnly()) unitAvailableState.intValue = value.toInt() else 0
+                        if (value.isDigitsOnly()) unitAvailableState.intValue = value.toInt() else unitAvailableState.intValue = 0
                     },
                     label = { Text(text = "Unidades disponibles") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-
                 )
 
                 OutlinedTextField(

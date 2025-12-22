@@ -7,6 +7,7 @@ import com.ramir.bakeryapp.data.database.relations.CartItemDetails
 import com.ramir.bakeryapp.domain.Cart.DeleteAllCartIngredientDessert
 import com.ramir.bakeryapp.domain.Cart.GetAllCartIngredientDessert
 import com.ramir.bakeryapp.domain.Cart.PostCartIngredientDessert
+import com.ramir.bakeryapp.domain.Cart.PostPurchaseUseCase
 import com.ramir.bakeryapp.domain.model.Cart
 import com.ramir.bakeryapp.domain.model.CartListUiState
 import com.ramir.bakeryapp.domain.model.SaveUiState
@@ -27,7 +28,8 @@ import java.math.BigDecimal
 class CartViewModel @Inject constructor(
     private val getAllCartIngredientDessert: GetAllCartIngredientDessert,
     private val postCartIngredientDessert: PostCartIngredientDessert,
-    private val deleteAllCartIngredientDessert: DeleteAllCartIngredientDessert
+    private val deleteAllCartIngredientDessert: DeleteAllCartIngredientDessert,
+    private val postPurchaseUseCase: PostPurchaseUseCase
 ): ViewModel(){
     private val _cart = MutableStateFlow(CartListUiState())
     val cart: StateFlow<CartListUiState> = _cart.asStateFlow()
@@ -67,7 +69,7 @@ class CartViewModel @Inject constructor(
         }
     }
 
-     fun deleteAllCart(){
+     private fun deleteAllCart(){
         _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
         viewModelScope.launch {
             try {
@@ -80,36 +82,24 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    fun addIngredientToCart(index:Int){
-        val currentCartList = _cart.value.cartList
-        when(currentCartList) {
-            is Resource.Error -> TODO()
-            Resource.Loading -> TODO()
-            is Resource.Success<List<CartItemDetails>> -> {
-                val updatedItems = currentCartList.data.mapIndexedNotNull { i, item ->
-                    if(i == index){
-                        item.cartItem.copy(additionalIngredientQuantity = (item.cartItem.additionalIngredientQuantity + 1))
-                    }
+    fun makePurchase(){
+        _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
+        viewModelScope.launch {
+            try {
+                val currentState = _cart.value
+                val currentResource = currentState.cartList
+                if(currentResource is Resource.Success){
+                    postPurchaseUseCase(currentResource.data)
+                    deleteAllCartIngredientDessert()
                 }
-
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
+            }catch (e: Exception){
+                Log.e("ERROR", e.message.toString())
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error")) }
             }
         }
     }
 
-    fun substractIngredientToCart(index:Int){
-        val currentCartList = _cart.value.cartList
-        when(currentCartList) {
-            is Resource.Error -> TODO()
-            Resource.Loading -> TODO()
-            is Resource.Success<List<CartItemDetails>> -> {
-                val updatedItems = currentCartList.data.mapIndexedNotNull { i, item ->
-                    if(i == index){
-                        item.cartItem.copy(additionalIngredientQuantity = (item.cartItem.additionalIngredientQuantity + 1))
-                    }
-                }
 
-            }
-        }
-    }
 
 }
