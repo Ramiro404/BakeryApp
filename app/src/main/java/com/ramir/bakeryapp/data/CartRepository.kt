@@ -64,5 +64,6 @@ class CartRepository @Inject constructor(
                 total=it.cartItem.total)
             orderList.add(orderDessert)
         }
+        orderDessertDao.insertAdditionalIngredient(orderList)
     }
 }

@@ -69,19 +69,6 @@ class CartViewModel @Inject constructor(
         }
     }
 
-     private fun deleteAllCart(){
-        _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
-        viewModelScope.launch {
-            try {
-                deleteAllCartIngredientDessert()
-                _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
-            }catch (e: Exception){
-                Log.e("ERROR", e.message.toString())
-                _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error")) }
-            }
-        }
-    }
-
     fun makePurchase(){
         _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
         viewModelScope.launch {

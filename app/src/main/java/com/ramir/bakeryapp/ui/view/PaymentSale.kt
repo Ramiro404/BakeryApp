@@ -38,7 +38,8 @@ fun PaymentSaleScreen(cartViewModel: CartViewModel = hiltViewModel()){
     val saveUiState by cartViewModel.saveUiState.collectAsStateWithLifecycle()
     var quantityPaid by rememberSaveable { mutableStateOf(BigDecimal.ZERO) }
     var changeToReturn by rememberSaveable { mutableStateOf(BigDecimal.ZERO)}
-    var showDialog by rememberSaveable { mutableStateOf(false) }
+    var showDialog by rememberSaveable { mutableStateOf(true) }
+    var showLoading by rememberSaveable { mutableStateOf(false) }
     Scaffold(
         topBar = { BakeryTopAppBar("Confirmar pago") }
     ) { paddingValues ->
@@ -65,7 +66,9 @@ fun PaymentSaleScreen(cartViewModel: CartViewModel = hiltViewModel()){
                         },
                         changeToReturn.toString())
                     Button(onClick = {
+                        showLoading = true
                         cartViewModel.makePurchase()
+                        showLoading = false
                     }) {
                         Text(text = "Confirmar compra")
                     }
@@ -79,7 +82,10 @@ fun PaymentSaleScreen(cartViewModel: CartViewModel = hiltViewModel()){
                     showDialog
                 )
 
-                SaveResource.Loading -> LoadingProgress()
+                SaveResource.Loading -> {
+                    LoadingProgress(showLoading)
+                    Text("SAVE UI")
+                }
                 SaveResource.Success -> DialogSuccess(
                     { showDialog = false },
                     "Guardado correctamente",

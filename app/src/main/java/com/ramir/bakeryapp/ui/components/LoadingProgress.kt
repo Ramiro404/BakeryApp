@@ -8,10 +8,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LoadingProgress(){
-    CircularProgressIndicator(
-        modifier = Modifier.width(64.dp),
-        color = MaterialTheme.colorScheme.secondary,
-        trackColor = MaterialTheme.colorScheme.surfaceVariant
-    )
+fun LoadingProgress(
+    showLoading: Boolean = true
+){
+    if(showLoading){
+        CircularProgressIndicator(
+            modifier = Modifier.width(64.dp),
+            color = MaterialTheme.colorScheme.secondary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    }
+
 }
