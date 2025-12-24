@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
@@ -22,9 +23,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.ramir.bakeryapp.domain.model.Dessert
 import com.ramir.bakeryapp.domain.model.DessertListUiState
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
@@ -84,6 +88,12 @@ private fun DessertItem(
         onAddIngredients()
     }) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            AsyncImage(
+                model = dessert.imagePath,
+                contentDescription = "Dessert",
+                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
             Text(text = dessert.name)
             Text(text = dessert.description)
             Text(text = dessert.unitAvailable.toString())

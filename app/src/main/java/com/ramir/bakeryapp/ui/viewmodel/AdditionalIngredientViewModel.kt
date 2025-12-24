@@ -90,13 +90,14 @@ class AdditionalIngredientViewModel @Inject constructor(
         }
     }
 
-    fun postIngredient(name: String, description: String, unitAvailable: Int, price: BigDecimal) {
+    fun postIngredient(name: String, description: String, unitAvailable: Int, price: BigDecimal, imagePath: String) {
         _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
         val ingredient = AdditionalIngredient(
             name = name,
             description = description,
             unitAvailable = unitAvailable,
-            price = price
+            price = price,
+            imagePath = imagePath
         )
         viewModelScope.launch {
             try{

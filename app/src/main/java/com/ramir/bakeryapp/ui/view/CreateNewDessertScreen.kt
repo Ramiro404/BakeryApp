@@ -63,18 +63,18 @@ fun CreateNewDessertScreen(
     val showDialog = remember { mutableStateOf(true) }
 
     val context = LocalContext.current
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    var savedPath by remember { mutableStateOf<String?>(null) }
+    //var imageUri by remember { mutableStateOf<Uri?>(null) }
+    //var savedPath by remember { mutableStateOf<String?>(null) }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         uri?.let {
-            imageUri = it
+            imageViewModel.updateTemporaryUri(uri)
+            //imageUri = it
             // Guardamos físicamente y obtenemos el path
-            val path = imageViewModel.saveImageToInternalStorage(context, it)
-            savedPath = path
-
+            //val path = imageViewModel.saveImageToInternalStorage(context, it)
+            //savedPath = path
             // Guardamos en Room a través del ViewModel
             //viewModel.saveImagePath(path)
         }
@@ -134,12 +134,15 @@ fun CreateNewDessertScreen(
 
 
                     // Mostrar la imagen (usando Coil)
+                imageViewModel.temporaryImageUri.let { uri ->
                     AsyncImage(
-                        model = savedPath ?: imageUri, // Si ya se guardó, usa el path; si no, la URI temporal
+                        model = uri, // Si ya se guardó, usa el path; si no, la URI temporal
                         contentDescription = "Imagen seleccionada",
                         modifier = Modifier.size(200.dp).clip(RoundedCornerShape(8.dp)),
                         contentScale = ContentScale.Crop
                     )
+                }
+
 
                     Button(onClick = {
                         launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -147,20 +150,25 @@ fun CreateNewDessertScreen(
                         Text("Seleccionar Imagen")
                     }
 
-                    savedPath?.let {
-                        Text("Guardado en: $it", fontSize = 10.sp)
-                    }
+
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
                     onClick = {
-                        dessertViewModel.saveNewDessert(
-                            nameState.value,
-                            descriptionState.value,
-                            unitAvailableState.intValue,
-                            priceState.value
-                        )
+
+                        imageViewModel.temporaryImageUri?.let { uri ->
+
+                            val imagePath = imageViewModel.saveImageToInternalStorage(context, uri)
+                            dessertViewModel.saveNewDessert(
+                                nameState.value,
+                                descriptionState.value,
+                                unitAvailableState.intValue,
+                                priceState.value,
+                                imagePath
+                                )
+                        }
+
                     }
                 ) {
                     Text(text = "Guardar este nuevo postre")

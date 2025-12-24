@@ -1,5 +1,6 @@
 package com.ramir.bakeryapp.domain.model
 
+import androidx.room.ColumnInfo
 import com.ramir.bakeryapp.data.database.entities.AdditionalIngredientEntity
 import com.ramir.bakeryapp.utils.Resource
 import java.math.BigDecimal
@@ -9,10 +10,11 @@ data class AdditionalIngredient(
     val name:String,
     val description:String,
     val unitAvailable:Int,
-    val price: BigDecimal
+    val price: BigDecimal,
+    val imagePath:String = ""
 )
 
-fun AdditionalIngredientEntity.toDomain() = AdditionalIngredient(id,name,description,unitAvailable,price)
+fun AdditionalIngredientEntity.toDomain() = AdditionalIngredient(id,name,description,unitAvailable,price,imagePath)
 
 data class AdditionalIngredientUiState(
     val ingredientResource: Resource<AdditionalIngredient> = Resource.Loading

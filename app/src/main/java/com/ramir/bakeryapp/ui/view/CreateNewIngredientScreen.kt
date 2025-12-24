@@ -1,6 +1,5 @@
 package com.ramir.bakeryapp.ui.view
 
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,7 +49,7 @@ import java.math.BigDecimal
 @Composable
 fun CreateNewIngredientScreen(
     additionalIngredientViewModel: AdditionalIngredientViewModel = hiltViewModel(),
-    viewModel: SaveImageViewModel = hiltViewModel()) {
+    imageViewModel: SaveImageViewModel = hiltViewModel()) {
     val nameState = remember { mutableStateOf("") }
     val descriptionState = remember { mutableStateOf("") }
     val unitAvailableState = remember { mutableIntStateOf(0) }
@@ -63,16 +61,17 @@ fun CreateNewIngredientScreen(
     val showDialog = remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    var savedPath by remember { mutableStateOf<String?>(null) }
+    //var imageUri by remember { mutableStateOf<Uri?>(null) }
+    //var savedPath by remember { mutableStateOf<String?>(null) }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         uri?.let {
-            imageUri = it
-            val path = viewModel.saveImageToInternalStorage(context, it)
-            savedPath = path
+            imageViewModel.updateTemporaryUri(uri)
+            //imageUri = it
+            //val path = imageViewModel.saveImageToInternalStorage(context, it)
+            //savedPath = path
         }
     }
 
@@ -119,13 +118,17 @@ fun CreateNewIngredientScreen(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                 )
 
+                imageViewModel.temporaryImageUri.let { uri ->
                     // Mostrar la imagen (usando Coil)
                     AsyncImage(
-                        model = savedPath ?: imageUri, // Si ya se guardó, usa el path; si no, la URI temporal
+                        model = uri, // Si ya se guardó, usa el path; si no, la URI temporal
                         contentDescription = "Imagen seleccionada",
                         modifier = Modifier.size(200.dp).clip(RoundedCornerShape(8.dp)),
                         contentScale = ContentScale.Crop
                     )
+                }
+
+
 
                     Button(onClick = {
                         launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -133,21 +136,26 @@ fun CreateNewIngredientScreen(
                         Text("Seleccionar Imagen")
                     }
 
-                    savedPath?.let {
+                   /* savedPath?.let {
                         Text("Guardado en: $it", fontSize = 10.sp)
-                    }
+                    }*/
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
                     onClick = {
-                        additionalIngredientViewModel.postIngredient(
-                            nameState.value,
-                            descriptionState.value,
-                            unitAvailableState.value,
-                            priceState.value
-                        )
-                        showDialog.value = true
+                        imageViewModel.temporaryImageUri?.let { uri ->
+                            val imagePath = imageViewModel.saveImageToInternalStorage(context, uri)
+                            additionalIngredientViewModel.postIngredient(
+                                nameState.value,
+                                descriptionState.value,
+                                unitAvailableState.value,
+                                priceState.value,
+                                imagePath
+                            )
+                            showDialog.value = true
+                        }
+
                     }
                 ) {
                     Text(text = "Guardar este nuevo postre")

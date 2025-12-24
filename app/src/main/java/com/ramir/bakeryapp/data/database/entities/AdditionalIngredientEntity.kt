@@ -13,7 +13,8 @@ data class AdditionalIngredientEntity(
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "description") val description: String,
     @ColumnInfo(name = "unit_available") val unitAvailable: Int = 0,
-    @ColumnInfo(name = "price") val price: BigDecimal = BigDecimal.ZERO
+    @ColumnInfo(name = "price") val price: BigDecimal = BigDecimal.ZERO,
+    @ColumnInfo(name = "image_path") val imagePath:String = ""
 )
 
-fun AdditionalIngredient.toEntity() = AdditionalIngredientEntity(id,name,description,unitAvailable, price)
+fun AdditionalIngredient.toEntity() = AdditionalIngredientEntity(id,name,description,unitAvailable, price, imagePath)

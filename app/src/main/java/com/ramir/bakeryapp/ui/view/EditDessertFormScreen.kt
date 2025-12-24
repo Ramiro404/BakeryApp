@@ -1,6 +1,11 @@
 package com.ramir.bakeryapp.ui.view
 
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -21,17 +28,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.ramir.bakeryapp.domain.model.Dessert
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
 import com.ramir.bakeryapp.ui.components.DialogError
 import com.ramir.bakeryapp.ui.components.LoadingProgress
 import com.ramir.bakeryapp.ui.viewmodel.DessertViewModel
+import com.ramir.bakeryapp.ui.viewmodel.SaveImageViewModel
 import com.ramir.bakeryapp.utils.Resource
 import java.math.BigDecimal
 
@@ -39,12 +51,23 @@ import java.math.BigDecimal
 @Composable
 fun EditDessertFormScreen(
     dessertViewModel: DessertViewModel = hiltViewModel(),
-    dessertId: String = ""
+    dessertId: String = "",
+    imageViewModel: SaveImageViewModel = hiltViewModel()
 ) {
 
     val dessertState by dessertViewModel.dessertUiState.collectAsStateWithLifecycle(initialValue = null)
     LaunchedEffect(Unit) {
         dessertViewModel.getDessertById(dessertId.toInt())
+    }
+
+    val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            imageViewModel.updateTemporaryUri(uri)
+        }
     }
 
     Scaffold(
@@ -59,13 +82,18 @@ fun EditDessertFormScreen(
                 is Resource.Success<Dessert> -> EditDessertFormContent(
                     resource.data,
                     {
-                        dessertViewModel.saveNewDessert(
+                        val imagePath = imageViewModel.saveImageToInternalStorage(context, imageViewModel.temporaryImageUri!!)
+                        dessertViewModel.updateDessertById(
+                            it.id,
                             it.name,
                             it.description,
                             it.unitAvailable,
-                            it.price
+                            it.price,
+                            imagePath
                         )
-                    }) //show ui
+                    },
+                    imageViewModel.temporaryImageUri,
+                    launcher) //show ui
                 else -> { DialogError({}, "No se encontro el postre")} //show modal error
             }
         }
@@ -75,7 +103,9 @@ fun EditDessertFormScreen(
 @Composable
 private fun EditDessertFormContent(
     dessertState: Dessert,
-    onSubmit: (dessert: Dessert) -> Unit
+    onSubmit: (dessert: Dessert) -> Unit,
+    uri: Uri?,
+    launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>
 ) {
     val nameState = remember { mutableStateOf(dessertState.name) }
     val descriptionState = remember { mutableStateOf(dessertState.description) }
@@ -117,6 +147,19 @@ private fun EditDessertFormContent(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
         )
 
+            AsyncImage(
+                model = uri ?: dessertState.imagePath, // Si ya se guardó, usa el path; si no, la URI temporal
+                contentDescription = "Imagen seleccionada",
+                modifier = Modifier.size(200.dp).clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
+
+        Button(onClick = {
+            launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }) {
+            Text("Seleccionar Imagen")
+        }
+
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
@@ -126,7 +169,8 @@ private fun EditDessertFormContent(
                     nameState.value,
                     descriptionState.value,
                     unitAvailableState.value,
-                    priceState.value
+                    priceState.value,
+                    imagePath = ""
                 )
                 onSubmit(updatedDessert)
             }

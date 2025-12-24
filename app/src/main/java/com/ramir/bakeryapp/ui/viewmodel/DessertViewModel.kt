@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.ramir.bakeryapp.domain.dessert.GetAllDessertsUseCase
 import com.ramir.bakeryapp.domain.dessert.GetDessertByIdUseCase
 import com.ramir.bakeryapp.domain.dessert.PostNewDessertUseCase
+import com.ramir.bakeryapp.domain.dessert.UpdateDessertByIdUseCase
 import com.ramir.bakeryapp.domain.model.Dessert
 import com.ramir.bakeryapp.domain.model.DessertListUiState
 import com.ramir.bakeryapp.domain.model.DessertUiState
@@ -26,7 +27,8 @@ import java.math.BigDecimal
 class DessertViewModel @Inject constructor(
     private val getAllDessertsUseCase: GetAllDessertsUseCase,
     private val postNewDessertUseCase: PostNewDessertUseCase,
-    private val getDessertByIdUseCase: GetDessertByIdUseCase
+    private val getDessertByIdUseCase: GetDessertByIdUseCase,
+    private val updateDessertByIdUseCase: UpdateDessertByIdUseCase
 ): ViewModel() {
     private val _dessertListUiState = MutableStateFlow(DessertListUiState())
     val dessertListUiState: Flow<DessertListUiState> = _dessertListUiState.asStateFlow()
@@ -41,9 +43,9 @@ class DessertViewModel @Inject constructor(
         getDessertList()
     }
 
-    fun saveNewDessert(name:String, description:String, unitAvailable:Int, price: BigDecimal){
+    fun saveNewDessert(name:String, description:String, unitAvailable:Int, price: BigDecimal, image:String){
         _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
-        val dessert = Dessert(name= name, description= description, unitAvailable =  unitAvailable, price = price )
+        val dessert = Dessert(name= name, description= description, unitAvailable =  unitAvailable, price = price, imagePath = image )
         viewModelScope.launch{
             try {
                 postNewDessertUseCase(dessert = dessert)
@@ -81,6 +83,20 @@ class DessertViewModel @Inject constructor(
             }catch (e: Exception){
                 Log.e("ERROR", e.message.toString())
                 _dessertUiState.update { it.copy(dessertResource = Resource.Error("Ocurrio un error ${e.message}")) }
+            }
+        }
+    }
+
+    fun updateDessertById(id: Int,name:String, description:String, unitAvailable:Int, price: BigDecimal, image:String){
+        viewModelScope.launch {
+            _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
+            try {
+                val dessert = Dessert(id= id,name= name, description= description, unitAvailable =  unitAvailable, price = price, imagePath = image )
+                updateDessertByIdUseCase(dessert)
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
+            }catch (e: Exception){
+                Log.e("ERROR", e.message.toString())
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error ${e.message}")) }
             }
         }
     }

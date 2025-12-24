@@ -2,6 +2,9 @@ package com.ramir.bakeryapp.ui.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +19,14 @@ import javax.inject.Inject
 class SaveImageViewModel @Inject constructor(): ViewModel() {
     private val _imagePath = MutableStateFlow("")
     val imagePath: StateFlow<String> = _imagePath.asStateFlow()
+
+    var temporaryImageUri by mutableStateOf<Uri?>(null)
+        private set
+
+    fun updateTemporaryUri(uri: Uri?) {
+        temporaryImageUri = uri
+    }
+
 
     fun saveImageToInternalStorage(context: Context, uri: Uri): String {
         val fileName = "img_${System.currentTimeMillis()}.jpg"

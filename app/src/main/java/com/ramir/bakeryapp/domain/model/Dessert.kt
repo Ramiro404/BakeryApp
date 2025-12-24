@@ -10,10 +10,11 @@ data class Dessert(
     val name: String,
     val description: String,
     val unitAvailable: Int,
-    val price: BigDecimal
+    val price: BigDecimal,
+    val imagePath:String = ""
 )
 
-fun DessertEntity.toDomain() = Dessert(id, name, description, unitAvailable, price)
+fun DessertEntity.toDomain() = Dessert(id, name, description, unitAvailable, price, imagePath)
 
 data class DessertUiState(
     val dessertResource: Resource<Dessert> = Resource.Loading
