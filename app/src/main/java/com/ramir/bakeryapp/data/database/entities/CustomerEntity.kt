@@ -3,6 +3,7 @@ package com.ramir.bakeryapp.data.database.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.ramir.bakeryapp.domain.model.Customer
 
 @Entity(tableName = "customer_table")
 data class CustomerEntity(
@@ -12,3 +13,5 @@ data class CustomerEntity(
     @ColumnInfo(name = "last_name") val lastname: String,
     @ColumnInfo(name = "phone_number") val phoneNumber: String
 )
+
+fun Customer.toEntity() = CustomerEntity(id,name,lastname,phoneNumber)

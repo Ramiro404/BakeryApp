@@ -39,4 +39,7 @@ interface CartIngredientDessertDao {
     //@Query("Select count(*) FROM cart_dessert_additional_ingredient_entity")
     //suspend fun getConsecutiveDessertNumber()
 
+    @Query("SELECT MAX(dessert_item_number) FROM cart_dessert_additional_ingredient_entity")
+    suspend fun getConsecutiveDessertItemNumber(): Int
+
 }

@@ -41,6 +41,7 @@ import com.ramir.bakeryapp.ui.components.LoadingProgress
 import com.ramir.bakeryapp.ui.viewmodel.AdditionalIngredientViewModel
 import com.ramir.bakeryapp.ui.viewmodel.CartViewModel
 import com.ramir.bakeryapp.utils.Resource
+import java.util.UUID
 
 @Preview(showBackground = true)
 @Composable
@@ -57,6 +58,8 @@ fun SaleIngredientListSale(
     val cartListUiState by cartViewModel.cart.collectAsStateWithLifecycle(initialValue = CartListUiState())
     var showDialog = remember { mutableStateOf(false) }
     var quantity = remember { mutableStateOf(0) }
+    val itemNumber = UUID.randomUUID().toString()
+
 
     Scaffold(
         topBar = { BakeryTopAppBar("Selecciona los ingredientes") }
@@ -103,10 +106,12 @@ fun SaleIngredientListSale(
                                                     dessertId.toInt(),
                                                     it.ingredient.id,
                                                     it.quantity,
-                                                    total
+                                                    total,
+                                                    itemNumber
                                                 )
                                             }
                                         }
+
                                         navigateToSaleDessertList()
                                     }
                                 ) {
@@ -122,10 +127,12 @@ fun SaleIngredientListSale(
                                                 dessertId.toInt(),
                                                 it.ingredient.id,
                                                 it.quantity,
-                                                total
+                                                total,
+                                                itemNumber
                                             )
                                         }
                                     }
+
                                     navigateToPayment()
 
                                 }) {

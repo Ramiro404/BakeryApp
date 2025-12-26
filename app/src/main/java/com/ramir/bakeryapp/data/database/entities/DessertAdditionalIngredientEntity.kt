@@ -10,5 +10,6 @@ data class DessertAdditionalIngredientEntity (
     @ColumnInfo(name = "id") val id: Int = 0,
     @ColumnInfo(name = "dessert_id") val dessertId: Int = 0,
     @ColumnInfo(name = "additional_ingredient_id") val additionalIngredientId: Int = 0,
-    @ColumnInfo(name = "additional_ingredient_quantity") val additionalIngredientQuantity: Int = 0
+    @ColumnInfo(name = "additional_ingredient_quantity") val additionalIngredientQuantity: Int = 0,
+    @ColumnInfo(name = "item_number") val itemNumber: String = "",
 )

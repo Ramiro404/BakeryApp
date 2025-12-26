@@ -48,7 +48,7 @@ class CartRepository @Inject constructor(
         val dessertIngredientIdList = mutableListOf<Int>()
 
         cartList.forEach {
-            val diEntity = DessertAdditionalIngredientEntity(0, it.dessert.id, it.additionalIngredient.id, it.cartItem.additionalIngredientQuantity)
+            val diEntity = DessertAdditionalIngredientEntity(0, it.dessert.id, it.additionalIngredient.id, it.cartItem.additionalIngredientQuantity, it.cartItem.dessertItemNumber)
             val dessertIngredientId = dessertAdditionalIngredientDao.insertDessertAdditionalIgredient(diEntity)
             total += it.cartItem.total
             dessertIngredientIdList.add(dessertIngredientId.toInt())

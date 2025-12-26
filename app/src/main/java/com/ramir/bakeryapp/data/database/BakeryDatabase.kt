@@ -25,7 +25,7 @@ import com.ramir.bakeryapp.utils.LocalDateTimeConverter
     entities = [
         DessertEntity::class, OrderEntity::class,
         AdditionalIngredientEntity::class, CustomerEntity::class,
-        OrderDessertEntity::class, DessertAdditionalIngredientEntity::class, CartIngredientDessertEntity::class], version = 4, exportSchema = true)
+        OrderDessertEntity::class, DessertAdditionalIngredientEntity::class, CartIngredientDessertEntity::class], version = 7, exportSchema = true)
 @TypeConverters(BigDecimalConverter::class, LocalDateTimeConverter::class)
 abstract class BakeryDatabase: RoomDatabase(){
 

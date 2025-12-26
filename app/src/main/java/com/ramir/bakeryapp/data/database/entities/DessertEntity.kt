@@ -15,7 +15,8 @@ data class DessertEntity(
     @ColumnInfo(name = "description") val description: String,
     @ColumnInfo(name = "unit_available") val unitAvailable: Int = 0,
     @ColumnInfo(name = "price") val price: BigDecimal = BigDecimal("0.00"),
-    @ColumnInfo(name = "image_path") val imagePath:String = ""
+    @ColumnInfo(name = "image_path") val imagePath:String = "",
+
 )
 
 fun Dessert.toEntity() = DessertEntity(id, name, description, unitAvailable,  price, imagePath)

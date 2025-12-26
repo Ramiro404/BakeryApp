@@ -3,7 +3,6 @@ package com.ramir.bakeryapp.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ramir.bakeryapp.data.database.relations.CartItemDetails
 import com.ramir.bakeryapp.domain.Cart.DeleteAllCartIngredientDessert
 import com.ramir.bakeryapp.domain.Cart.GetAllCartIngredientDessert
 import com.ramir.bakeryapp.domain.Cart.PostCartIngredientDessert
@@ -15,11 +14,9 @@ import com.ramir.bakeryapp.utils.Resource
 import com.ramir.bakeryapp.utils.SaveResource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -55,9 +52,9 @@ class CartViewModel @Inject constructor(
         }
     }
 
-     fun postCart(id:Int, dessertId:Int, additionalIngredientId: Int, additionalIngredientQuantity:Int, total: BigDecimal){
+     fun postCart(id:Int, dessertId:Int, additionalIngredientId: Int, additionalIngredientQuantity:Int, total: BigDecimal, dessertItemNumber: String){
         _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
-        val cart = Cart(id,dessertId,additionalIngredientId,additionalIngredientQuantity, total)
+        val cart = Cart(id,dessertId,additionalIngredientId,additionalIngredientQuantity, total, dessertItemNumber)
         viewModelScope.launch {
             try {
                 postCartIngredientDessert(cart)
@@ -86,6 +83,9 @@ class CartViewModel @Inject constructor(
             }
         }
     }
+
+
+
 
 
 

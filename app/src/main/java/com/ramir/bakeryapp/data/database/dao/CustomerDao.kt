@@ -16,7 +16,7 @@ interface CustomerDao {
     suspend fun getCustomerById(id: Int): CustomerEntity?
 
     @Insert
-    suspend fun insertCustomer(customerEntity: CustomerEntity): Unit
+    suspend fun insertCustomer(customerEntity: CustomerEntity): Long
 
     @Update
     suspend fun updateCustomer(customerEntity: CustomerEntity): Int

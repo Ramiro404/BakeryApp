@@ -16,4 +16,6 @@ interface DessertAdditionalIngredientDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDessertAdditionalIgredient(entity: DessertAdditionalIngredientEntity): Long
 
+
+
 }
