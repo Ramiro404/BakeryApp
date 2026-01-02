@@ -176,8 +176,27 @@ private fun AppNavHost(
 
             composable(
                 route = NavDestination.PaymentList,
-                content = { PaymentSaleScreen() }
+                content = {
+                    SaleOrderListScreen(onPaymentDetail = { navController.navigate(NavDestination.PaymentDetailRoute(it))})
+                }
             )
+
+            composable(
+                route= NavDestination.PaymentDetail,
+                arguments = listOf(
+                    navArgument("orderId"){
+                        type = NavType.StringType
+                    }
+                )
+            ){ backStackEntry ->
+                val id = backStackEntry.arguments?.getString("orderId")
+                Log.i("NAVEGA","$id")
+                if(id != null){
+                    SaleOrderDetailScreen(
+                        orderId = id,
+                        navigateToPaymentList = { navController.popBackStack() })
+                }
+            }
         }
     }
 }

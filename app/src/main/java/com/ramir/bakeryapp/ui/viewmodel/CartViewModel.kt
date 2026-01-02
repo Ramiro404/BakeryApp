@@ -7,8 +7,10 @@ import com.ramir.bakeryapp.domain.Cart.DeleteAllCartIngredientDessert
 import com.ramir.bakeryapp.domain.Cart.GetAllCartIngredientDessert
 import com.ramir.bakeryapp.domain.Cart.PostCartIngredientDessert
 import com.ramir.bakeryapp.domain.Cart.PostPurchaseUseCase
+import com.ramir.bakeryapp.domain.customer.PostCustomerUseCase
 import com.ramir.bakeryapp.domain.model.Cart
 import com.ramir.bakeryapp.domain.model.CartListUiState
+import com.ramir.bakeryapp.domain.model.Customer
 import com.ramir.bakeryapp.domain.model.SaveUiState
 import com.ramir.bakeryapp.utils.Resource
 import com.ramir.bakeryapp.utils.SaveResource
@@ -26,7 +28,8 @@ class CartViewModel @Inject constructor(
     private val getAllCartIngredientDessert: GetAllCartIngredientDessert,
     private val postCartIngredientDessert: PostCartIngredientDessert,
     private val deleteAllCartIngredientDessert: DeleteAllCartIngredientDessert,
-    private val postPurchaseUseCase: PostPurchaseUseCase
+    private val postPurchaseUseCase: PostPurchaseUseCase,
+    private val postCustomerUseCase: PostCustomerUseCase
 ): ViewModel(){
     private val _cart = MutableStateFlow(CartListUiState())
     val cart: StateFlow<CartListUiState> = _cart.asStateFlow()
@@ -54,7 +57,7 @@ class CartViewModel @Inject constructor(
 
      fun postCart(id:Int, dessertId:Int, additionalIngredientId: Int, additionalIngredientQuantity:Int, total: BigDecimal, dessertItemNumber: String){
         _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
-        val cart = Cart(id,dessertId,additionalIngredientId,additionalIngredientQuantity, total, dessertItemNumber)
+        val cart = Cart(id,dessertId,additionalIngredientId,additionalIngredientQuantity, total, dessertItemNumber, 0)
         viewModelScope.launch {
             try {
                 postCartIngredientDessert(cart)
@@ -66,13 +69,14 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    fun makePurchase(){
+    fun makePurchase(customer: Customer){
         _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
         viewModelScope.launch {
             try {
                 val currentState = _cart.value
                 val currentResource = currentState.cartList
                 if(currentResource is Resource.Success){
+                    val customerId = postCustomerUseCase(customer)
                     postPurchaseUseCase(currentResource.data)
                     deleteAllCartIngredientDessert()
                 }

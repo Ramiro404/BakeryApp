@@ -23,5 +23,5 @@ data class CartItemDetails(
         entityColumn = "id",
         entity = AdditionalIngredientEntity::class // Asume que tienes una AdditionalIngredientEntity
     )
-    val additionalIngredient: AdditionalIngredientEntity
+    val additionalIngredient: AdditionalIngredientEntity,
 )

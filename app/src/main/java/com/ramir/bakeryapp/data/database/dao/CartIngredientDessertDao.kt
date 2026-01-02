@@ -17,6 +17,8 @@ interface CartIngredientDessertDao {
             cart_item.*,           -- Selecciona todas las columnas de la tabla de unión
             d.*,                   -- Selecciona todas las columnas del postre
             ai.* -- Selecciona todas las columnas del ingrediente
+         
+            
         FROM cart_dessert_additional_ingredient_entity AS cart_item
         
         INNER JOIN dessert_table AS d
@@ -24,6 +26,7 @@ interface CartIngredientDessertDao {
         
         INNER JOIN additional_ingredient_table AS ai
         ON cart_item.additional_ingredient_id = ai.id
+        
         """)
     suspend fun getAllCartIngredientsDessert(): List<CartItemDetails>
 

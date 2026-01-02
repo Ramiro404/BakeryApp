@@ -3,6 +3,7 @@ package com.ramir.bakeryapp.data.database.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.ramir.bakeryapp.domain.model.Order
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -14,3 +15,5 @@ data class OrderEntity(
     @ColumnInfo(name = "total") val total: BigDecimal = BigDecimal.ZERO,
     @ColumnInfo(name = "customer_id") val customerId: Int
 )
+
+fun OrderEntity.toDomain() = Order(id, timestamp, total, customerId)

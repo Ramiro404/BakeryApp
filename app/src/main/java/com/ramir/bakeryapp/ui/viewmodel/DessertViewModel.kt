@@ -54,7 +54,6 @@ class DessertViewModel @Inject constructor(
                 Log.e("ERROR", e.message.toString())
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Error(message = e.message.toString())) }
             }
-
         }
 
     }

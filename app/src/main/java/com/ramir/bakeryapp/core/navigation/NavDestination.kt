@@ -42,6 +42,11 @@ import kotlinx.serialization.Serializable
 
         @Serializable
         val PaymentList:String = "payment"
+
+        @Serializable
+        val PaymentDetail:String = "${PaymentList}/{orderId}"
+
+        fun PaymentDetailRoute(orderId: String) = "${PaymentList}/${orderId}"
     }
 
 }

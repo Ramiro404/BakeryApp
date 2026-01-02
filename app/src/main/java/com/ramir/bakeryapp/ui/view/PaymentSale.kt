@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramir.bakeryapp.data.database.relations.CartItemDetails
+import com.ramir.bakeryapp.domain.model.Customer
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
 import com.ramir.bakeryapp.ui.components.DialogError
 import com.ramir.bakeryapp.ui.components.DialogSuccess
@@ -40,6 +41,12 @@ fun PaymentSaleScreen(cartViewModel: CartViewModel = hiltViewModel()){
     var changeToReturn by rememberSaveable { mutableStateOf(BigDecimal.ZERO)}
     var showDialog by rememberSaveable { mutableStateOf(true) }
     var showLoading by rememberSaveable { mutableStateOf(false) }
+
+    var customerName by rememberSaveable { mutableStateOf("") }
+    var customerLastname by rememberSaveable { mutableStateOf("") }
+    var customerPhone by rememberSaveable { mutableStateOf("") }
+    var showQuantityMessageError by rememberSaveable { mutableStateOf(false) }
+
     Scaffold(
         topBar = { BakeryTopAppBar("Confirmar pago") }
     ) { paddingValues ->
@@ -64,11 +71,24 @@ fun PaymentSaleScreen(cartViewModel: CartViewModel = hiltViewModel()){
                             quantityPaid = it
                             changeToReturn = totalToPay.value - quantityPaid
                         },
-                        changeToReturn.toString())
+                        changeToReturn.toString(),
+                        customerName,
+                        { customerName = it},
+                        customerLastname,
+                        { customerLastname = it},
+                        customerPhone,
+                        { customerPhone = it},
+                        showQuantityMessageError)
                     Button(onClick = {
-                        showLoading = true
-                        cartViewModel.makePurchase()
-                        showLoading = false
+                        if((quantityPaid - changeToReturn) >= BigDecimal.ZERO ){
+                            showLoading = true
+                            val customer = Customer(name = customerName, lastname = customerLastname, phoneNumber =  customerPhone)
+                            cartViewModel.makePurchase(customer)
+                            showLoading = false
+                        }else{
+                            showQuantityMessageError = true
+                        }
+
                     }) {
                         Text(text = "Confirmar compra")
                     }
@@ -102,7 +122,15 @@ fun PaymentSaleContentent(
     totalToPay: BigDecimal,
     quantityPaid: String,
     onQuantityPaid: (BigDecimal) -> Unit,
-    changeToReturn: String){
+    changeToReturn: String,
+    customerName: String,
+    onCustomerName: (String) -> Unit,
+    customerLastname: String,
+    onCustomerLastname: (String) -> Unit,
+    customerPhone: String,
+    onCustomerPhone: (String) -> Unit,
+    showQuantityMessageError: Boolean
+    ){
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row {
@@ -132,6 +160,32 @@ fun PaymentSaleContentent(
             label = {Text("Ingrese la cantidad")}
         )
         Text("Cambio a regresar al cliente:  $$changeToReturn")
+        if(showQuantityMessageError){
+            Text("La cantidad ingresada no puede ser menor al total")
+        }
+
+
+        OutlinedTextField(
+            value = customerName,
+            onValueChange = { onCustomerName(it) },
+            label = {Text("Nombre del cliente")}
+        )
+
+        OutlinedTextField(
+            value = customerLastname,
+            onValueChange = { onCustomerLastname(it) },
+            label = {Text("Apellidos del cliente")}
+        )
+
+        OutlinedTextField(
+            value = customerPhone,
+            onValueChange = { onCustomerPhone(it) },
+            label = {Text("Numero de telefono")}
+        )
+
+
+
+
 
     }
 }

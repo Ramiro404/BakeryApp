@@ -12,10 +12,11 @@ data class Cart(
     val additionalIngredientId:Int,
     val additionalIngredientQuantity:Int,
     val total: BigDecimal,
-    val dessertItemNumber: String
+    val dessertItemNumber: String,
+    val customerId: Int
 )
 
-fun Cart.toEntity() = CartIngredientDessertEntity(id,dessertId,additionalIngredientId, additionalIngredientQuantity,total, dessertItemNumber)
+fun Cart.toEntity() = CartIngredientDessertEntity(id,dessertId,additionalIngredientId, additionalIngredientQuantity,total, dessertItemNumber, customerId)
 
 data class CartListUiState(
     val cartList: Resource<List<CartItemDetails>> = Resource.Loading
