@@ -1,7 +1,9 @@
 package com.ramir.bakeryapp.data
 
+import android.util.Log
 import com.ramir.bakeryapp.data.database.dao.OrderDao
 import com.ramir.bakeryapp.data.database.entities.toDomain
+import com.ramir.bakeryapp.data.database.relations.OrderDetail
 import com.ramir.bakeryapp.domain.model.Order
 import javax.inject.Inject
 
@@ -12,8 +14,10 @@ class OrderRepository @Inject() constructor(
         return  orderDao.getAllOrder().map { it.toDomain() }
     }
 
-    suspend fun getOrderById(id:Int): Order?{
+    suspend fun getOrderById(id:Int): Map<String, List<OrderDetail>>{
         val result = orderDao.getOrderById(id)
-        return result?.toDomain()
+        val result2 = result.groupBy { it.dessertAdditionalIngerdient.itemNumber }
+        Log.i("Re", result2.toString())
+        return result2
     }
 }

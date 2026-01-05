@@ -3,6 +3,7 @@ package com.ramir.bakeryapp.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ramir.bakeryapp.domain.model.OrderDetailUiState
 import com.ramir.bakeryapp.domain.model.OrderListUiState
 import com.ramir.bakeryapp.domain.model.OrderUiState
 import com.ramir.bakeryapp.domain.order.GetAllOrdersUseCase
@@ -27,6 +28,9 @@ class OrderViewModel @Inject constructor(
     private val _orderUiState = MutableStateFlow(OrderUiState())
     val orderUiState: Flow<OrderUiState> = _orderUiState.asStateFlow()
 
+    private val _orderDetail = MutableStateFlow(OrderDetailUiState())
+    val orderDetailUiState: Flow<OrderDetailUiState> = _orderDetail.asStateFlow()
+
     init {
         getAllOrders()
     }
@@ -46,12 +50,13 @@ class OrderViewModel @Inject constructor(
 
     fun getOrderById(orderId:Int){
         viewModelScope.launch {
-            _orderUiState.update { it.copy(Resource.Loading) }
+            _orderDetail.update { it.copy(Resource.Loading) }
             try {
                 val result = getOrderByIdUseCase(orderId)
-                _orderUiState.update { it.copy(Resource.Success(result)) }
+                Log.i("RESUL", result.toString())
+                _orderDetail.update { it.copy(Resource.Success(result)) }
             }catch (e: Exception){
-                _orderUiState.update { it.copy(Resource.Error("${e.message}")) }
+                _orderDetail.update { it.copy(Resource.Error("${e.message}")) }
                 Log.e("ERROR", e.message.toString())
             }
         }

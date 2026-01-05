@@ -1,5 +1,6 @@
 package com.ramir.bakeryapp.domain.model
 
+import com.ramir.bakeryapp.data.database.relations.OrderDetail
 import com.ramir.bakeryapp.utils.Resource
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -17,5 +18,9 @@ data class OrderListUiState(
 
 data class OrderUiState(
     val orderUiState: Resource<Order?> = Resource.Loading
+)
+
+data class OrderDetailUiState(
+    val orderUiState: Resource<Map<String, List<OrderDetail>>> = Resource.Loading
 )
 

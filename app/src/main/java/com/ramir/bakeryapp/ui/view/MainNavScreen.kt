@@ -97,7 +97,11 @@ private fun AppNavHost(
                     Destination.SALES -> SalesScreen(
                         navigateToSaleDessertList = {
                             navController.navigate( route = NavDestination.SaleDessertList)
+                        },
+                        navigateToPaymentList = {
+                            navController.navigate(route = NavDestination.PaymentList)
                         }
+
                     )
                     Destination.USER -> TODO()
                 }

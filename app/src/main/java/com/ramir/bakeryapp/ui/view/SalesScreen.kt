@@ -14,7 +14,8 @@ import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
 
 @Composable
 fun SalesScreen(
-    navigateToSaleDessertList: () -> Unit
+    navigateToSaleDessertList: () -> Unit,
+    navigateToPaymentList:() -> Unit
 ){
     Scaffold(
         topBar = {BakeryTopAppBar("Realizar una venta")}
@@ -22,7 +23,8 @@ fun SalesScreen(
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
             SalesMenu(
                 modifier = Modifier.fillMaxWidth(),
-                navigateToSaleDessertList
+                navigateToSaleDessertList,
+                navigateToPaymentList
             )
         }
     }
@@ -31,7 +33,8 @@ fun SalesScreen(
 @Composable
 fun SalesMenu(
     modifier: Modifier = Modifier,
-    navigateToSaleDessertList: () -> Unit
+    navigateToSaleDessertList: () -> Unit,
+    navigateToPaymentList:() -> Unit
 ){
     Column() {
         OutlinedButton(
@@ -41,7 +44,7 @@ fun SalesMenu(
         }
 
         OutlinedButton(
-            onClick = navigateToSaleDessertList
+            onClick = navigateToPaymentList
         ) {
             Text(text = "Ver ventas")
         }
