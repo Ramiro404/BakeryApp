@@ -174,7 +174,7 @@ private fun AppNavHost(
                     SaleIngredientListSale(
                         dessertId = id,
                         navigateToSaleDessertList = { navController.popBackStack()},
-                        navigateToPayment = { navController.navigate(NavDestination.PaymentList)})
+                        navigateToPayment = { navController.navigate(NavDestination.Payment)})
                 }
             }
 
@@ -182,6 +182,13 @@ private fun AppNavHost(
                 route = NavDestination.PaymentList,
                 content = {
                     SaleOrderListScreen(onPaymentDetail = { navController.navigate(NavDestination.PaymentDetailRoute(it))})
+                }
+            )
+
+            composable(
+                route = NavDestination.Payment,
+                content = {
+                    PaymentSaleScreen()
                 }
             )
 

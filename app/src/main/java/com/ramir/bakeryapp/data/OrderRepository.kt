@@ -16,8 +16,8 @@ class OrderRepository @Inject() constructor(
 
     suspend fun getOrderById(id:Int): Map<String, List<OrderDetail>>{
         val result = orderDao.getOrderById(id)
-        val result2 = result.groupBy { it.dessertAdditionalIngerdient.itemNumber }
-        Log.i("Re", result2.toString())
-        return result2
+        val resultGroupedItemNumber = result.groupBy { it.dessertAdditionalIngerdient.itemNumber}
+        Log.i("Re", resultGroupedItemNumber.toString())
+        return resultGroupedItemNumber
     }
 }

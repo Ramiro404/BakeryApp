@@ -1,6 +1,7 @@
 package com.ramir.bakeryapp.ui.view
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -28,6 +29,7 @@ import com.ramir.bakeryapp.ui.components.DialogError
 import com.ramir.bakeryapp.ui.components.LoadingProgress
 import com.ramir.bakeryapp.ui.viewmodel.OrderViewModel
 import com.ramir.bakeryapp.utils.Resource
+import java.math.BigDecimal
 
 @Composable
 fun SaleOrderDetailScreen(
@@ -36,8 +38,7 @@ fun SaleOrderDetailScreen(
     orderViewModel: OrderViewModel = hiltViewModel()
 ) {
     val orderState by orderViewModel.orderDetailUiState.collectAsStateWithLifecycle(initialValue = OrderDetailUiState())
-    var showLoading by rememberSaveable { mutableStateOf(true) }
-
+    var total by rememberSaveable { mutableStateOf(BigDecimal.ZERO) }
     LaunchedEffect(Unit) {
         orderViewModel.getOrderById(orderId.toInt())
     }
@@ -53,31 +54,30 @@ fun SaleOrderDetailScreen(
                 is Resource.Error -> DialogError({}, resource.message)
                 Resource.Loading -> LoadingProgress()
                 is Resource.Success<Map<String, List<OrderDetail>>> -> {
-                    showLoading = false
-                    val orderList = resource.data.toList()
-                    //order.forEach { Text(text = "${it.order} ${it.orderDessert} ${it.dessert} ${it.customer} ${it.dessertAdditionalIngerdient} ${it.ingredient}" ) }
+
                     LazyColumn {
                         resource.data.forEach{ (key, value) ->
                             item(key = key){
-                                Text(text = "$key")
+                                HorizontalDivider(modifier = Modifier.height(6.dp))
+                                Text(text = key)
                             }
+                            itemsIndexed(value){ index, order ->
+                                if(index == 0){
+                                    total = order.order.total
+                                    Text(text = order.dessert.name)
+                                    Text(text = order.order.total.toString())
 
-                            items(value){ list ->
-                                Text(text = "${list.dessert} ${list.ingredient} $${list.orderDessert.total} $${list.order.total}")
+                                }
+                                Text("index $index")
+                                Text(text = order.ingredient.name)
+                                Text(text = "Cantidad: ${order.dessertAdditionalIngerdient.additionalIngredientQuantity}")
+
                             }
                         }
-                    }
-                    orderList.map {
-
-
-                        /*
-                        Text(text = "${it.key} }")
-                        it.value.map { data ->
-                            Text(text = "${data.dessert} ${data.ingredient} $${data.orderDessert.total} $${data.order.total}")
-                            HorizontalDivider()
-                        }*/
-
-
+                        item {
+                            HorizontalDivider(modifier = Modifier.height(6.dp))
+                            Text(text = "TOTAL: $total")
+                        }
                     }
                 }
             }

@@ -46,7 +46,7 @@ import java.util.UUID
 @Preview(showBackground = true)
 @Composable
 fun SaleIngredientListSale(
-    dessertId: String ="0",
+    dessertId: String = "0",
     additionalIngredientViewModel: AdditionalIngredientViewModel = hiltViewModel(),
     cartViewModel: CartViewModel = hiltViewModel(),
     navigateToSaleDessertList: () -> Unit = {},
@@ -74,29 +74,49 @@ fun SaleIngredientListSale(
                 Resource.Loading -> LoadingProgress()
                 is Resource.Success<List<AdditionalIngredientWithQuantity>> -> {
                     if (resource.data.isNotEmpty()) {
-                            LazyColumn() {
-                                itemsIndexed(resource.data) { index, item ->
-                                    IngredientItem(
-                                        ingredient = item.ingredient,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        quantity = item.quantity,
-                                        onAdd = {
-                                            additionalIngredientViewModel.addIngredientToCart(
-                                                index
-                                            )
-                                        },
-                                        onSubstract = {
-                                            additionalIngredientViewModel.substractIngredientToCart(
-                                                index
-                                            )
-                                        })
-                                }
-
+                        LazyColumn() {
+                            itemsIndexed(resource.data) { index, item ->
+                                IngredientItem(
+                                    ingredient = item.ingredient,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    quantity = item.quantity,
+                                    onAdd = {
+                                        additionalIngredientViewModel.addIngredientToCart(
+                                            index
+                                        )
+                                    },
+                                    onSubstract = {
+                                        additionalIngredientViewModel.substractIngredientToCart(
+                                            index
+                                        )
+                                    })
                             }
-                            Row(Modifier.fillMaxWidth()) {
-                                Button(
-                                    modifier = Modifier.weight(1f),
-                                    onClick =  {
+                            item {
+                                Row(Modifier.fillMaxWidth()) {
+                                    Button(
+                                        modifier = Modifier.weight(1f),
+                                        onClick = {
+                                            resource.data.forEach {
+                                                if (it.quantity > 0) {
+                                                    val total =
+                                                        it.ingredient.price * it.quantity.toBigDecimal()
+                                                    cartViewModel.postCart(
+                                                        0,
+                                                        dessertId.toInt(),
+                                                        it.ingredient.id,
+                                                        it.quantity,
+                                                        total,
+                                                        itemNumber
+                                                    )
+                                                }
+                                            }
+
+                                            navigateToSaleDessertList()
+                                        }
+                                    ) {
+                                        Text(text = "Agregar otro postre")
+                                    }
+                                    Button(modifier = Modifier.weight(1f), onClick = {
                                         resource.data.forEach {
                                             if (it.quantity > 0) {
                                                 val total =
@@ -112,33 +132,17 @@ fun SaleIngredientListSale(
                                             }
                                         }
 
-                                        navigateToSaleDessertList()
-                                    }
-                                ) {
-                                    Text(text = "Agregar otro postre")
-                                }
-                                Button(modifier = Modifier.weight(1f), onClick = {
-                                    resource.data.forEach {
-                                        if (it.quantity > 0) {
-                                            val total =
-                                                it.ingredient.price * it.quantity.toBigDecimal()
-                                            cartViewModel.postCart(
-                                                0,
-                                                dessertId.toInt(),
-                                                it.ingredient.id,
-                                                it.quantity,
-                                                total,
-                                                itemNumber
-                                            )
-                                        }
-                                    }
+                                        navigateToPayment()
 
-                                    navigateToPayment()
-
-                                }) {
-                                    Text(text = "Proceder al pago")
+                                    }) {
+                                        Text(text = "Proceder al pago")
+                                    }
                                 }
                             }
+
+                        }
+
+
                     } else {
                         DialogError({}, "No hay ingredientes")
                     }
@@ -157,9 +161,11 @@ fun IngredientItem(
     onSubstract: () -> Unit
 ) {
     Card(modifier) {
-        Column(modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+        ) {
             Text(text = ingredient.name)
             Row(
                 modifier = Modifier.fillMaxWidth(),

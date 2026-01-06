@@ -41,6 +41,9 @@ import kotlinx.serialization.Serializable
         fun SaleIngredientListRoute(dessertId: String) = "saleDessertList/$dessertId"
 
         @Serializable
+        val Payment = "purchase"
+
+        @Serializable
         val PaymentList:String = "payment"
 
         @Serializable

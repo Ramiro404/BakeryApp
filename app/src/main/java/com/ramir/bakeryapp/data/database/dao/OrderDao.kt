@@ -37,6 +37,7 @@ interface OrderDao {
         ON di.additional_ingredient_id  = ai.id
         
         WHERE o.id = :id
+        group by di.item_number, di.additional_ingredient_id
 
     """)
     suspend fun getOrderById(id: Int): List<OrderDetail>
