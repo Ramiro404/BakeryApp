@@ -2,6 +2,7 @@ package com.ramir.bakeryapp.ui.view
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -56,27 +57,25 @@ fun SaleOrderDetailScreen(
                 is Resource.Success<Map<String, List<OrderDetail>>> -> {
 
                     LazyColumn {
-                        resource.data.forEach{ (key, value) ->
-                            item(key = key){
+                        resource.data.forEach { (key, value) ->
+                            item(key = key) {
                                 HorizontalDivider(modifier = Modifier.height(6.dp))
-                                Text(text = key)
+                                //Text(text = key)
                             }
-                            itemsIndexed(value){ index, order ->
-                                if(index == 0){
+                            itemsIndexed(value) { index, order ->
+                                if (index == 0) {
                                     total = order.order.total
-                                    Text(text = order.dessert.name)
-                                    Text(text = order.order.total.toString())
-
+                                    Text(text = "Postre ${order.dessert.name}")
+                                    //Text(text = "Subtotal: ${order.order.total}")
                                 }
-                                Text("index $index")
-                                Text(text = order.ingredient.name)
+                                Text(text = "Ingrediente adicional: ${order.ingredient.name}")
                                 Text(text = "Cantidad: ${order.dessertAdditionalIngerdient.additionalIngredientQuantity}")
 
                             }
                         }
                         item {
                             HorizontalDivider(modifier = Modifier.height(6.dp))
-                            Text(text = "TOTAL: $total")
+                            Text(text = "TOTAL: $$total")
                         }
                     }
                 }

@@ -22,6 +22,14 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    packaging {
+        resources.excludes.addAll(
+            listOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
+        )
+        )
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -58,6 +66,7 @@ dependencies {
     implementation(libs.dagger.hilt)
     implementation(libs.dagger.hilt.navigation)
     implementation(libs.androidx.room.ktx)
+    testImplementation(libs.junit.junit)
     kapt(libs.dagger.hilt.compiler)
     implementation(libs.coil.compose)
 
@@ -68,6 +77,19 @@ dependencies {
     kapt("androidx.room:room-compiler:${room_version}")
 
     testImplementation(libs.junit)
+    testImplementation("io.mockk:mockk:1.14.7")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+//Ya estaba, la hemos actualizado.
+    testImplementation("io.mockk:mockk:1.13.8")
+
+    // If you are doing instrumented tests (AndroidTest folder)
+    androidTestImplementation("io.mockk:mockk-android:1.13.8")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+    //testImplementation("androidx.arch.core:core-testing:2.2.0")
+    androidTestImplementation("androidx.arch.core:core-testing:2.1.0")
+    testImplementation ("app.cash.turbine:turbine:1.0.0")
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
