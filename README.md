@@ -242,9 +242,185 @@ Return:
 (none)  
 
 
+### CustomerDao
+
+#### getAllCustomer
+
+Returns all registers from CustomerEntity
+
+Args:
+(none)
+
+Return:
+(List<CustomerEntity>)  The registers contained in a list
 
 
+#### getCustomerById
+
+Returns the register that matches the id provided
+
+Args:
+(Int) id - Id of the customer to find
+
+Return:
+(CustomerEntity?)  If it finds the register by id returns the data, if not, it returns null
+
+#### insertCustomer
+
+Saves the register with the data provided
+
+Args:
+(CustomerEntity) customerEntity - The customer data to save
+
+Return:
+(Long)  If it saves the register, it returns 1, if not, it returns 0
+
+#### updateCustomer
+
+Updates the register with the new data provided
+
+Args:
+(CustomerEntity) customerEntity - The customer data to update
+
+Return:
+(Int)  If it updates the register, it returns 1, if not, it returns 0
 
 
+### DessertAdditionalIngredientDao.kt
+
+#### getAllDessertAdditionalIngredientById
+
+Get all ingredients related to an id that the customer chose
+
+Args:
+(Int) id - the id of the ingredients
+
+Return:
+(List<DessertAdditionalIngredientEntity>)  Returns all the registers that matched the id provided as argument
+
+#### insertDessertAdditionalIngredient
+
+Saves a register for this entity
+
+Args:
+(DessertAdditionalIngredientEntity) entity - the data provided
+
+Return:
+(Long)  Returns 1 if it was able to save the register, if not, returns 0
+
+### DessertDao.kt
+
+#### getAllDesserts
+
+Get all desserts from this entity
+
+Args:
+(None) 
+
+Return:
+(List<DessertEntity>)  Returns all the registers contained in a list
+
+#### getDessertById
+
+Get the register that matches the id provided
+
+Args:
+(Int) id - Id of the dessert to find
+
+Return:
+(DessertEntity?)  If it does not finds the register, then returns null
+
+#### insertDessert
+
+Saves a new register about this entity (Dessert)
+
+Args:
+(DessertEntity) dessertEntity - the data provided to save
+
+Return:
+(None)  
+
+#### updateDessert
+
+Update the register that matches the id provided and save the changes
+
+Args:
+(DessertEntity) dessertEntity - the data provided to update
+
+Return:
+(Int)  Returns 1 if it was able to update the register, if not, returns 0
 
 
+#### deleteDessertById
+
+Delete the register that matches the id provided
+
+Args:
+(Int) id - the Id of the dessert to update
+
+Return:
+(None) 
+
+### OrderDao.kt
+
+#### getOrderById
+
+Get the list of register that matches the id provided, which allow us to get the desserts and ingredients from every one
+
+Args:
+(Int) id - Id of the order to find
+
+Return:
+(List<OrderDetail>)  If it does not finds the register, then returns null
+
+#### insertOrder
+
+Saves a new register about this entity (Order)
+
+Args:
+(OrderEntity) orderEntity - the new data to save
+
+Return:
+(Long)  Returns 1 if it was able to save the register, if not, returns 0
+
+#### updateOrder
+
+Update a new register about this entity (Order)
+
+Args:
+(OrderEntity) orderEntity - the new data to save
+
+Return:
+(Long)  Returns 1 if it was able to update the register, if not, returns 0
+
+#### deleteOrderById
+
+Delete the register that matches the id provided
+
+Args:
+(Int) id - the Id of the order to delete
+
+Return:
+(None) 
+
+### OrderDessertDao.kt
+
+#### getAllAdditionalIngredient
+
+Get the list of register that matches the id provided
+
+Args:
+(Int) orderId - Id of the order to find
+
+Return:
+(List<OrderDetail>)  If it does not finds any register, then returns an empty list
+
+#### insertAdditionalIngredient
+
+Saves a new register about this entity (Order)
+
+Args:
+(List<OrderDessertEntity>) orderDessertEntity - the new data to save
+
+Return:
+(None)  

@@ -36,12 +36,15 @@ interface CartIngredientDessertDao {
     @Query("DELETE FROM cart_dessert_additional_ingredient_entity")
     suspend fun deleteAll(): Unit
 
+    //VERIFY IF IT IS USED
     @Query("SELECT * FROM additional_ingredient_table WHERE id IN (:ids)")
     suspend fun getIngredientsFromIdList(ids: List<Int>): List<AdditionalIngredientEntity>
 
     //@Query("Select count(*) FROM cart_dessert_additional_ingredient_entity")
     //suspend fun getConsecutiveDessertNumber()
 
+
+    // NOT USED
     @Query("SELECT MAX(dessert_item_number) FROM cart_dessert_additional_ingredient_entity")
     suspend fun getConsecutiveDessertItemNumber(): Int
 
