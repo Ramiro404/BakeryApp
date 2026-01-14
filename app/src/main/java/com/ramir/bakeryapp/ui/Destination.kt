@@ -14,5 +14,5 @@ enum class Destination(
 ){
     INVENTORY("inventory", "Inventario", Icons.Filled.DateRange, "Inventario"),
     SALES("sales", "Venta", Icons.Filled.ShoppingCart, "Venta"),
-    USER("user", "Usuario", Icons.Filled.Face, "Usuario"),
+    //USER("user", "Usuario", Icons.Filled.Face, "Usuario"),
 }

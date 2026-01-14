@@ -10,12 +10,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.ramir.bakeryapp.R
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
+import com.ramir.bakeryapp.ui.components.NavButtonCard
 
+@Preview
 @Composable
 fun SalesScreen(
-    navigateToSaleDessertList: () -> Unit,
-    navigateToPaymentList:() -> Unit
+    navigateToSaleDessertList: () -> Unit = {},
+    navigateToPaymentList:() -> Unit = {}
 ){
     Scaffold(
         topBar = {BakeryTopAppBar("Realizar una venta")}
@@ -37,16 +41,16 @@ fun SalesMenu(
     navigateToPaymentList:() -> Unit
 ){
     Column() {
-        OutlinedButton(
-            onClick = navigateToSaleDessertList
-        ) {
-            Text(text = "Realizar una nueva venta")
-        }
 
-        OutlinedButton(
-            onClick = navigateToPaymentList
-        ) {
-            Text(text = "Ver ventas")
-        }
+        NavButtonCard(
+            onClick = navigateToSaleDessertList,
+            icon = R.drawable.ic_sale,
+            title = "Realizar una nueva venta"
+        )
+        NavButtonCard(
+            onClick = navigateToPaymentList,
+            icon = R.drawable.ic_eye_sales,
+            title = "Ver ventas"
+        )
     }
 }

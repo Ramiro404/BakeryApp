@@ -103,7 +103,6 @@ private fun AppNavHost(
                         }
 
                     )
-                    Destination.USER -> TODO()
                 }
             }
             composable(
@@ -145,8 +144,6 @@ private fun AppNavHost(
                 val id = backStackEntry.arguments?.getString("id")
                 if(id != null){
                     EditDessertFormScreen(dessertId = id)
-                }else{
-
                 }
             }
 

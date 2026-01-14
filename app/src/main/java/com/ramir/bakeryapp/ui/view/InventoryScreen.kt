@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.ramir.bakeryapp.R
 import com.ramir.bakeryapp.ui.components.BakeryTopAppBar
+import com.ramir.bakeryapp.ui.components.NavButtonCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,41 +63,44 @@ private fun InventoryMenu(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        OutlinedButton(
-            onClick = navigateToCreateNewDessert
-        ) {
-            Text(text = stringResource(R.string.add_new_dessert))
-        }
 
-        OutlinedButton(
-            onClick = navigateToEditDessert
-        ) {
-            Text(text = "Editar Ingrediente")
-        }
+        NavButtonCard(
+            onClick = navigateToCreateNewDessert,
+            icon = R.drawable.ic_add,
+            title = stringResource(R.string.add_new_dessert)
+        )
 
-        OutlinedButton(
-            onClick = navigateToListDesserts
-        ) {
-            Text(text = stringResource(R.string.list_desserts))
-        }
 
-        OutlinedButton(
-            onClick = navigateToListIngredients
-        ) {
-            Text(text = "Ver Ingredientes")
-        }
+        NavButtonCard(
+            onClick = navigateToEditDessert,
+            icon = R.drawable.ic_edit,
+            title = "Editar Ingrediente"
+        )
 
-        OutlinedButton(
-            onClick = navigateToEditIngredients
-        ) {
-            Text(text = "Agregar/Restar Ingredientes")
-        }
+        NavButtonCard(
+            onClick = navigateToListDesserts,
+            icon = R.drawable.ic_cake,
+            title = stringResource(R.string.list_desserts)
+        )
 
-        OutlinedButton(
-            onClick = navigateToCreateIngredients
-        ) {
-            Text(text = "Crear Nuevo Ingrediente")
-        }
+
+        NavButtonCard(
+            onClick = navigateToListIngredients,
+            icon = R.drawable.ic_eye_sales,
+            title = "Ver Ingredientes"
+        )
+
+        NavButtonCard(
+            onClick = navigateToEditIngredients,
+            icon = R.drawable.ic_edit,
+            title ="Agregar/Restar Ingredientes"
+        )
+
+        NavButtonCard(
+            onClick = navigateToCreateIngredients,
+            icon = R.drawable.ic_add,
+            title = "Crear Nuevo Ingrediente"
+        )
     }
 }
 
