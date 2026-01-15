@@ -83,6 +83,8 @@ dependencies {
 //Ya estaba, la hemos actualizado.
     testImplementation("io.mockk:mockk:1.13.8")
 
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     // If you are doing instrumented tests (AndroidTest folder)
     androidTestImplementation("io.mockk:mockk-android:1.13.8")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
