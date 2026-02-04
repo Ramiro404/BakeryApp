@@ -85,7 +85,6 @@ private fun IngredientItem(item: AdditionalIngredient, modifier: Modifier =  Mod
             Text(text = item.description)
             Text(text = "Unidades: ${item.unitAvailable.toString()}")
             Text(text = "Precio: $ ${item.price.toString()}")
-            Text(text = item.imagePath)
 
         }
     }

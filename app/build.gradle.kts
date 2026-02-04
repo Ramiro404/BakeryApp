@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.dagger.hilt)
     implementation(libs.dagger.hilt.navigation)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     testImplementation(libs.junit.junit)
     kapt(libs.dagger.hilt.compiler)
     implementation(libs.coil.compose)
@@ -90,7 +91,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     //testImplementation("androidx.arch.core:core-testing:2.2.0")
     androidTestImplementation("androidx.arch.core:core-testing:2.1.0")
-    testImplementation ("app.cash.turbine:turbine:1.0.0")
+    //testImplementation (libs.turbine.v100)
+    testImplementation("app.cash.turbine:turbine:1.0.0")
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

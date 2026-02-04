@@ -28,10 +28,12 @@ class DessertViewModel @Inject constructor(
     private val getAllDessertsUseCase: GetAllDessertsUseCase,
     private val postNewDessertUseCase: PostNewDessertUseCase,
     private val getDessertByIdUseCase: GetDessertByIdUseCase,
-    private val updateDessertByIdUseCase: UpdateDessertByIdUseCase
+    private val updateDessertByIdUseCase: UpdateDessertByIdUseCase,
+
+
 ): ViewModel() {
     private val _dessertListUiState = MutableStateFlow(DessertListUiState())
-    val dessertListUiState: Flow<DessertListUiState> = _dessertListUiState.asStateFlow()
+    val dessertListUiState: StateFlow<DessertListUiState> = _dessertListUiState.asStateFlow()
 
     private val _dessertUiState = MutableStateFlow(DessertUiState())
     val dessertUiState: StateFlow<DessertUiState> = _dessertUiState.asStateFlow()
@@ -45,10 +47,10 @@ class DessertViewModel @Inject constructor(
 
     fun saveNewDessert(name:String, description:String, unitAvailable:Int, price: BigDecimal, image:String){
         _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
-        val dessert = Dessert(name= name, description= description, unitAvailable =  unitAvailable, price = price, imagePath = image )
         viewModelScope.launch{
             try {
-                postNewDessertUseCase(dessert = dessert)
+                val newDessert = Dessert(name= name, description= description, unitAvailable =  unitAvailable, price = price, imagePath = image )
+                postNewDessertUseCase(dessert = newDessert)
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
             }catch (e: Exception){
                 Log.e("ERROR", e.message.toString())
@@ -78,7 +80,15 @@ class DessertViewModel @Inject constructor(
             _dessertUiState.update { it.copy(dessertResource = Resource.Loading) }
             try {
                 val result = getDessertByIdUseCase(id)
-                _dessertUiState.update { it.copy(dessertResource = Resource.Success(result) as Resource<Dessert>) }
+                if(result == null){
+                    _dessertUiState.update {
+                        it.copy(
+                            dessertResource = Resource.Error("Dessert does not exists")
+                        )
+                    }
+                }else{
+                    _dessertUiState.update { it.copy(dessertResource = Resource.Success(result) as Resource<Dessert>) }
+                }
             }catch (e: Exception){
                 Log.e("ERROR", e.message.toString())
                 _dessertUiState.update { it.copy(dessertResource = Resource.Error("Ocurrio un error ${e.message}")) }
@@ -90,9 +100,14 @@ class DessertViewModel @Inject constructor(
         viewModelScope.launch {
             _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
             try {
-                val dessert = Dessert(id= id,name= name, description= description, unitAvailable =  unitAvailable, price = price, imagePath = image )
-                updateDessertByIdUseCase(dessert)
-                _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
+                val oldDessert = getDessertByIdUseCase(id)
+                if(oldDessert == null){
+                    _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Dessert does not found")) }
+                }else{
+                    val dessert = Dessert(id= id,name= name, description= description, unitAvailable =  unitAvailable, price = price, imagePath = image )
+                    updateDessertByIdUseCase(dessert)
+                    _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
+                }
             }catch (e: Exception){
                 Log.e("ERROR", e.message.toString())
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error ${e.message}")) }

@@ -5,10 +5,19 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="when_save_dessert_uistate_should_be_success()">
+      <SelectionState runConfigName="when_call_getDessertById_should_return_null()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="when_call_getDessertById_should_return_null()">
+      <SelectionState runConfigName="when_call_getDessertById_should_return_result_success()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="when_call_updateDessertById_should_return_success()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="when_call_updateDessertById_should_return_error_not_found()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="when_call_getDessertList_should_return_emptyList()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

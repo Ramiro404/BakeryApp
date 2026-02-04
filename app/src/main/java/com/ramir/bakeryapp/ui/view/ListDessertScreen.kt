@@ -65,6 +65,7 @@ private fun DessertList(dessertList: List<Dessert>){
     Column {
         Row(Modifier.fillMaxWidth()){
             Text(text = "#", modifier  = Modifier.weight(1f))
+            Text(text = "Imagen", modifier  = Modifier.weight(1f))
             Text(text = "Nombre", modifier  = Modifier.weight(1f))
             Text(text = "Unidades", modifier  = Modifier.weight(1f), overflow = TextOverflow.Ellipsis)
             Text(text = "Descripcion", modifier  = Modifier.weight(2f))
@@ -85,14 +86,14 @@ private fun DessertItem(
     dessert: Dessert,
     index: Int){
     Row(modifier){
+        Text(text = "$index", modifier  = Modifier.weight(1f))
         AsyncImage(
-            model = dessert.imagePath, // Si ya se guardó, usa el path; si no, la URI temporal
+            model = dessert.imagePath,
             contentDescription = "Imagen seleccionada",
-            modifier = Modifier.size(200.dp).clip(RoundedCornerShape(8.dp)),
+            modifier = Modifier.size(50.dp).clip(RoundedCornerShape(8.dp)),
             contentScale = ContentScale.Crop
         )
-        Text(text = "$index", modifier  = Modifier.weight(1f))
-        Text(text = dessert.name, modifier  = Modifier.weight(1f))
+        Text(text = dessert.name, modifier  = Modifier.weight(1f).padding(start = 8.dp))
         Text(text = dessert.unitAvailable.toString(), modifier  = Modifier.weight(1f))
         Text(text = dessert.description, modifier  = Modifier.weight(1f))
         Text(text = "$ ${dessert.price.toString()}", modifier  = Modifier.weight(1f))

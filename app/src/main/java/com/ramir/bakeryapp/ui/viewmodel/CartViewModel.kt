@@ -76,7 +76,7 @@ class CartViewModel @Inject constructor(
                 val currentState = _cart.value
                 val currentResource = currentState.cartList
                 if(currentResource is Resource.Success){
-                    val customerId = postCustomerUseCase(customer)
+                    postCustomerUseCase(customer)
                     postPurchaseUseCase(currentResource.data)
                     deleteAllCartIngredientDessert()
                 }
