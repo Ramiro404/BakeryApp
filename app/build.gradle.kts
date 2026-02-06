@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.dagger.hilt.navigation)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.compose.foundation.layout)
     testImplementation(libs.junit.junit)
     kapt(libs.dagger.hilt.compiler)
     implementation(libs.coil.compose)

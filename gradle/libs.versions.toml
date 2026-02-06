@@ -20,6 +20,7 @@ kluent-android-version= '1.73'
 app-cash-turbine-turbine='0.13.0'
 turbine = "1.0.0"
 lifecycleViewmodelKtx = "2.10.0"
+foundationLayout = "1.10.2"
 
 
 [libraries]
@@ -52,6 +53,7 @@ kluent-android = { group='org.amshove.kluent', name='kluent-android', version.re
 app-cash-turbine-turbine = { group='app.cash.turbine', name='turbine', version.ref='app-cash-turbine-turbine'}
 turbine-v100 = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

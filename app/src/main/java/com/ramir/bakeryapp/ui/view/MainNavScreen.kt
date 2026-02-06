@@ -165,7 +165,6 @@ private fun AppNavHost(
                 )
             ){ backStackEntry ->
                 val id = backStackEntry.arguments?.getString("dessertId")
-                Log.i("NAVEGA","$id")
                 if(id != null){
 
                     SaleIngredientListSale(
@@ -185,7 +184,7 @@ private fun AppNavHost(
             composable(
                 route = NavDestination.Payment,
                 content = {
-                    PaymentSaleScreen()
+                    PaymentSaleScreen(navigateToSales = { navController.navigate(Destination.SALES.route)})
                 }
             )
 
