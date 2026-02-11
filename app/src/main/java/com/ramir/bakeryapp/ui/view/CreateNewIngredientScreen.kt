@@ -165,15 +165,22 @@ fun CreateNewIngredientScreen(
 
         }
         when (val resource = saveUiState.saveUiResource) {
-            is SaveResource.Error -> DialogError(
-                { showDialog.value = false },
-                "Ocurrio un error",
-                showDialog.value
-            )
+            SaveResource.Idle -> {}
+            is SaveResource.Error -> {
+                DialogError(
+                    {
+                        showDialog.value = false
+                        additionalIngredientViewModel.resetSaveState()},
+                    "Ocurrio un error",
+                    showDialog.value
+                )
+            }
 
             SaveResource.Loading -> LoadingProgress()
             SaveResource.Success -> DialogSuccess(
-                { showDialog.value = false },
+                {
+                    showDialog.value = false
+                additionalIngredientViewModel.resetSaveState()},
                 "Guadardo con exito!",
                 showDialog.value
             )

@@ -25,5 +25,5 @@ data class DessertListUiState(
 )
 
 data class SaveUiState(
-    val saveUiResource: SaveResource = SaveResource.Loading
+    val saveUiResource: SaveResource = SaveResource.Idle
 )

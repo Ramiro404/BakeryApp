@@ -68,9 +68,12 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit.junit)
     kapt(libs.dagger.hilt.compiler)
     implementation(libs.coil.compose)
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+
 
     implementation("io.coil-kt:coil-compose:2.5.0")
 
@@ -86,6 +89,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.8")
 
     implementation("androidx.core:core-splashscreen:1.0.1")
+
 
     // If you are doing instrumented tests (AndroidTest folder)
     androidTestImplementation("io.mockk:mockk-android:1.13.8")

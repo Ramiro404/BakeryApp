@@ -33,7 +33,9 @@ fun InventoryScreen(
     navigateToListIngredients: () -> Unit = {},
     navigateToEditIngredients: () -> Unit = {},
     navigateToCreateIngredients: () -> Unit = {},
-    navigateToListDesserts: () -> Unit = {}
+    navigateToListDesserts: () -> Unit = {},
+    navigateToDeleteDessert: () -> Unit = {},
+    navigateToDeleteIngredient: () -> Unit = {}
 ){
     Scaffold(
         topBar = { BakeryTopAppBar("Inventario") }
@@ -46,7 +48,9 @@ fun InventoryScreen(
                 navigateToListIngredients,
                 navigateToEditIngredients,
                 navigateToCreateIngredients,
-                navigateToListDesserts
+                navigateToListDesserts,
+                navigateToDeleteDessert,
+                navigateToDeleteIngredient
             )
         }
     }
@@ -61,7 +65,9 @@ private fun InventoryMenu(
     navigateToListIngredients: () -> Unit,
     navigateToEditIngredients: () -> Unit,
     navigateToCreateIngredients: () -> Unit,
-    navigateToListDesserts: () -> Unit
+    navigateToListDesserts: () -> Unit,
+    navigateToDeleteDessert: () -> Unit,
+    navigateToDeleteIngredient: () -> Unit
     ){
     Column(
         modifier = modifier,
@@ -104,6 +110,20 @@ private fun InventoryMenu(
             onClick = navigateToCreateIngredients,
             icon = R.drawable.ic_add,
             title = "Crear Nuevo Ingrediente"
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+        NavButtonCard(
+            onClick = navigateToDeleteDessert,
+            icon = R.drawable.ic_close,
+            title = "Eliminar un postre"
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+        NavButtonCard(
+            onClick = navigateToDeleteIngredient,
+            icon = R.drawable.ic_close,
+            title = "Eliminar un ingrediente"
         )
     }
 }

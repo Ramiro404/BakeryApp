@@ -7,6 +7,7 @@ sealed class Resource<out T> {
 }
 
 sealed class SaveResource {
+    data object Idle: SaveResource()
     data object Loading: SaveResource()
     data object Success: SaveResource()
     data class Error(val message: String): SaveResource()

@@ -124,16 +124,20 @@ fun EditAdditionalIngredient(additionalIngredientViewModel: AdditionalIngredient
                 }
             )
             when (val resource = saveUiState.saveUiResource) {
+                SaveResource.Idle -> {}
                 is SaveResource.Error -> DialogError(
-                    { showDialog.value = false },
+                    {
+                        showDialog.value = false
+                        additionalIngredientViewModel.resetSaveState()
+                    },
                     "Ocurrio un error",
                     showDialog.value
                 )
-
                 SaveResource.Loading -> LoadingProgress()
                 SaveResource.Success -> DialogSuccess({
                     showDialog.value = false
                     showIngredientDialog.value = false
+                    additionalIngredientViewModel.resetSaveState()
                 }, "Se guardo con exito!", showDialog.value)
             }
 

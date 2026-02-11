@@ -23,4 +23,8 @@ class IngredientRepository @Inject constructor(
         val entity = ingredient.toEntity()
         ingredientDao.insertAdditionalIngredient(entity)
     }
+
+    suspend fun deleteIngredientById(id:Int){
+        ingredientDao.deleteAdditionalIngredientById(id)
+    }
 }

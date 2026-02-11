@@ -77,6 +77,7 @@ fun EditDessertFormScreen(
             .fillMaxSize()
             .padding(paddingValues)) {
             when (val resource = dessertState?.dessertResource) {
+
                 is Resource.Error -> DialogError({}, "Algo salio mal") //show modal error
                 Resource.Loading -> LoadingProgress() // show spinner
                 is Resource.Success<Dessert> -> EditDessertFormContent(

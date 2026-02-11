@@ -50,6 +50,12 @@ import kotlinx.serialization.Serializable
         val PaymentDetail:String = "${PaymentList}/{orderId}"
 
         fun PaymentDetailRoute(orderId: String) = "${PaymentList}/${orderId}"
+
+        @Serializable
+        val RemoveDessert = "removeDessert"
+
+        @Serializable
+        val RemoveIngredient = "removeIngredient"
     }
 
 }

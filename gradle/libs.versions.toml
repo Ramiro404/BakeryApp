@@ -21,6 +21,7 @@ app-cash-turbine-turbine='0.13.0'
 turbine = "1.0.0"
 lifecycleViewmodelKtx = "2.10.0"
 foundationLayout = "1.10.2"
+material3 = "1.4.0"
 
 
 [libraries]
@@ -54,6 +55,7 @@ app-cash-turbine-turbine = { group='app.cash.turbine', name='turbine', version.r
 turbine-v100 = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

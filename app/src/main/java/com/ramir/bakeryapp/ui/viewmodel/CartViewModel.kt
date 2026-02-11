@@ -12,6 +12,7 @@ import com.ramir.bakeryapp.domain.model.Cart
 import com.ramir.bakeryapp.domain.model.CartListUiState
 import com.ramir.bakeryapp.domain.model.Customer
 import com.ramir.bakeryapp.domain.model.SaveUiState
+import com.ramir.bakeryapp.utils.ResetSaveState
 import com.ramir.bakeryapp.utils.Resource
 import com.ramir.bakeryapp.utils.SaveResource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,7 +31,7 @@ class CartViewModel @Inject constructor(
     private val deleteAllCartIngredientDessert: DeleteAllCartIngredientDessert,
     private val postPurchaseUseCase: PostPurchaseUseCase,
     private val postCustomerUseCase: PostCustomerUseCase
-): ViewModel(){
+): ViewModel(), ResetSaveState {
     private val _cart = MutableStateFlow(CartListUiState())
     val cart: StateFlow<CartListUiState> = _cart.asStateFlow()
 
@@ -101,9 +102,9 @@ class CartViewModel @Inject constructor(
         }
     }
 
-
-
-
+    override fun resetSaveState() {
+        _saveUiState.update { it.copy(saveUiResource = SaveResource.Idle) }
+    }
 
 
 }

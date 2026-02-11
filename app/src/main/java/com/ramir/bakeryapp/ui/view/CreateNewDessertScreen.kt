@@ -178,6 +178,7 @@ fun CreateNewDessertScreen(
 
         }
         when (val resource = saveUiState.saveUiResource) {
+            SaveResource.Idle -> {}
             is SaveResource.Error -> DialogError(
                 { showDialog.value = false },
                 "Ocurrio un problema, no se pudo guardar el postre",

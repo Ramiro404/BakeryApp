@@ -21,7 +21,7 @@ import javax.inject.Inject
 class OrderViewModel @Inject constructor(
     private val getAllOrdersUseCase: GetAllOrdersUseCase,
     private val getOrderByIdUseCase: GetOrderByIdUseCase
-): ViewModel(){
+): ViewModel() {
     private val _orderListUiState = MutableStateFlow(OrderListUiState())
     val orderListUiState: Flow<OrderListUiState> = _orderListUiState.asStateFlow()
 
@@ -61,4 +61,5 @@ class OrderViewModel @Inject constructor(
             }
         }
     }
+
 }

@@ -92,6 +92,12 @@ private fun AppNavHost(
                             navigateToListDesserts = {
                                 navController.navigate(route = NavDestination.DessertList)
                             },
+                            navigateToDeleteDessert = {
+                                navController.navigate(route = NavDestination.RemoveDessert)
+                            },
+                            navigateToDeleteIngredient = {
+                                navController.navigate(route = NavDestination.RemoveIngredient)
+                            }
 
                     )
                     Destination.SALES -> SalesScreen(
@@ -204,6 +210,20 @@ private fun AppNavHost(
                         navigateToPaymentList = { navController.popBackStack() })
                 }
             }
+
+            composable(
+                route = NavDestination.RemoveDessert,
+                content = {
+                    RemoveDessertScreen()
+                }
+            )
+
+            composable(
+                route = NavDestination.RemoveIngredient,
+                content = {
+                    RemoveAdditionalIngredientScreen()
+                }
+            )
         }
     }
 }

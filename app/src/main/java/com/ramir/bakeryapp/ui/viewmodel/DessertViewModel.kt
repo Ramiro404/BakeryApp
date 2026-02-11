@@ -3,6 +3,7 @@ package com.ramir.bakeryapp.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ramir.bakeryapp.domain.dessert.DeleteDessertByIdUseCase
 import com.ramir.bakeryapp.domain.dessert.GetAllDessertsUseCase
 import com.ramir.bakeryapp.domain.dessert.GetDessertByIdUseCase
 import com.ramir.bakeryapp.domain.dessert.PostNewDessertUseCase
@@ -15,7 +16,6 @@ import com.ramir.bakeryapp.utils.Resource
 import com.ramir.bakeryapp.utils.SaveResource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,6 +29,7 @@ class DessertViewModel @Inject constructor(
     private val postNewDessertUseCase: PostNewDessertUseCase,
     private val getDessertByIdUseCase: GetDessertByIdUseCase,
     private val updateDessertByIdUseCase: UpdateDessertByIdUseCase,
+    private val deleteDessertByIdUseCase: DeleteDessertByIdUseCase
 
 
 ): ViewModel() {
@@ -45,6 +46,10 @@ class DessertViewModel @Inject constructor(
         getDessertList()
     }
 
+    fun resetSaveState(){
+        _saveUiState.update { it.copy(saveUiResource = SaveResource.Idle) }
+    }
+
     fun saveNewDessert(name:String, description:String, unitAvailable:Int, price: BigDecimal, image:String){
         _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
         viewModelScope.launch{
@@ -57,7 +62,6 @@ class DessertViewModel @Inject constructor(
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Error(message = e.message.toString())) }
             }
         }
-
     }
 
     fun getDessertList(){
@@ -111,6 +115,19 @@ class DessertViewModel @Inject constructor(
             }catch (e: Exception){
                 Log.e("ERROR", e.message.toString())
                 _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error ${e.message}")) }
+            }
+        }
+    }
+
+    fun removeDessert(id:Int){
+        _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
+        viewModelScope.launch{
+            try {
+                deleteDessertByIdUseCase(id)
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
+            }catch (e: Exception){
+                Log.e("ERROR", e.message.toString())
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Error(message = e.message.toString())) }
             }
         }
     }

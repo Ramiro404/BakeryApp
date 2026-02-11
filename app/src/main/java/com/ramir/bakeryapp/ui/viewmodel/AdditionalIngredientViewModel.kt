@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.util.copy
 import com.ramir.bakeryapp.data.database.relations.CartItemDetails
+import com.ramir.bakeryapp.domain.additionalIngredient.DeleteAdditionalIngredientUseCase
 import com.ramir.bakeryapp.domain.additionalIngredient.GetAllIAdditionalngredientsUseCase
 import com.ramir.bakeryapp.domain.additionalIngredient.PostNewAdditionalIngredient
 import com.ramir.bakeryapp.domain.additionalIngredient.UpdateAdditionalIngredient
@@ -13,6 +14,7 @@ import com.ramir.bakeryapp.domain.model.AdditionalIngredientListUiState
 import com.ramir.bakeryapp.domain.model.AdditionalIngredientWithQuantity
 import com.ramir.bakeryapp.domain.model.AdditionalIngredientWithQuantityListUiState
 import com.ramir.bakeryapp.domain.model.SaveUiState
+import com.ramir.bakeryapp.utils.ResetSaveState
 import com.ramir.bakeryapp.utils.Resource
 import com.ramir.bakeryapp.utils.SaveResource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,8 +30,9 @@ import java.math.BigDecimal
 class AdditionalIngredientViewModel @Inject constructor(
     private val getAllIAdditionalngredientsUseCase: GetAllIAdditionalngredientsUseCase,
     private val postNewAdditionalIngredient: PostNewAdditionalIngredient,
-    private val updateAdditionalIngredient: UpdateAdditionalIngredient
-) : ViewModel() {
+    private val updateAdditionalIngredient: UpdateAdditionalIngredient,
+    private val deleteAdditionalIngredientUseCase: DeleteAdditionalIngredientUseCase
+) : ViewModel(), ResetSaveState {
     private val _additionalIngredientListUiState =
         MutableStateFlow(AdditionalIngredientListUiState())
     val additionalIngredientListUiState: Flow<AdditionalIngredientListUiState> =
@@ -47,6 +50,7 @@ class AdditionalIngredientViewModel @Inject constructor(
         getList()
         getIngredientWithQuantityList()
     }
+
 
     private fun getList() {
         viewModelScope.launch {
@@ -173,5 +177,23 @@ class AdditionalIngredientViewModel @Inject constructor(
             )
         }
     }
+
+    fun deleteIngredient(id: Int) {
+        _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
+        viewModelScope.launch {
+            try{
+                deleteAdditionalIngredientUseCase(id)
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Success) }
+            }catch (e: Exception){
+                Log.e("ERROR", e.message.toString())
+                _saveUiState.update { it.copy(saveUiResource = SaveResource.Error("Ocurrio un error")) }
+            }
+        }
+    }
+
+    override fun resetSaveState() {
+        _saveUiState.update { it.copy(saveUiResource = SaveResource.Idle) }
+    }
+
 
 }
