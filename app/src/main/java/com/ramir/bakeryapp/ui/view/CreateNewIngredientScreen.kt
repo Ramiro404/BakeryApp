@@ -49,14 +49,16 @@ import java.math.BigDecimal
 @Composable
 fun CreateNewIngredientScreen(
     additionalIngredientViewModel: AdditionalIngredientViewModel = hiltViewModel(),
-    imageViewModel: SaveImageViewModel = hiltViewModel()) {
+    imageViewModel: SaveImageViewModel = hiltViewModel()
+) {
     val nameState = remember { mutableStateOf("") }
     val descriptionState = remember { mutableStateOf("") }
-    val unitAvailableState = remember { mutableIntStateOf(0) }
-    val priceState = remember { mutableStateOf(BigDecimal.ZERO) }
+    val unitAvailableState = remember { mutableStateOf("") }
+    val priceState = remember { mutableStateOf("") }
 
     val saveUiState by additionalIngredientViewModel.saveUiState.collectAsStateWithLifecycle(
-        SaveUiState())
+        SaveUiState()
+    )
 
     val showDialog = remember { mutableStateOf(false) }
 
@@ -80,7 +82,8 @@ fun CreateNewIngredientScreen(
     ) { paddingValues ->
         Box(
             modifier = Modifier
-                .fillMaxSize().verticalScroll(rememberScrollState())
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(paddingValues)
         ) {
             Column(
@@ -100,19 +103,20 @@ fun CreateNewIngredientScreen(
                 )
 
                 OutlinedTextField(
-                    value = unitAvailableState.intValue.toString(),
+                    value = unitAvailableState.value,
                     onValueChange = { value: String ->
-                        if (value.isDigitsOnly()) unitAvailableState.intValue = value.toInt() else unitAvailableState.intValue = 0
+                        if (value.isDigitsOnly() || value.isEmpty()) {
+                            unitAvailableState.value = value
+                        }
                     },
                     label = { Text(text = "Unidades disponibles") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
 
                 OutlinedTextField(
-                    value = priceState.value.toString(),
+                    value = priceState.value,
                     onValueChange = {
-                        if (it.isDigitsOnly() || it.equals(".")) priceState.value =
-                            it.toBigDecimal() else 0
+                        priceState.value = it
                     },
                     label = { Text(text = "Precio unitario del postre") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
@@ -123,22 +127,24 @@ fun CreateNewIngredientScreen(
                     AsyncImage(
                         model = uri, // Si ya se guardó, usa el path; si no, la URI temporal
                         contentDescription = "Imagen seleccionada",
-                        modifier = Modifier.size(200.dp).clip(RoundedCornerShape(8.dp)),
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clip(RoundedCornerShape(8.dp)),
                         contentScale = ContentScale.Crop
                     )
                 }
 
 
 
-                    Button(onClick = {
-                        launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                    }) {
-                        Text("Seleccionar Imagen")
-                    }
+                Button(onClick = {
+                    launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }) {
+                    Text("Seleccionar Imagen")
+                }
 
-                   /* savedPath?.let {
-                        Text("Guardado en: $it", fontSize = 10.sp)
-                    }*/
+                /* savedPath?.let {
+                     Text("Guardado en: $it", fontSize = 10.sp)
+                 }*/
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -149,8 +155,8 @@ fun CreateNewIngredientScreen(
                             additionalIngredientViewModel.postIngredient(
                                 nameState.value,
                                 descriptionState.value,
-                                unitAvailableState.value,
-                                priceState.value,
+                                unitAvailableState.value.toIntOrNull() ?: 0,
+                                priceState.value.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                                 imagePath
                             )
                             showDialog.value = true
@@ -170,7 +176,8 @@ fun CreateNewIngredientScreen(
                 DialogError(
                     {
                         showDialog.value = false
-                        additionalIngredientViewModel.resetSaveState()},
+                        additionalIngredientViewModel.resetSaveState()
+                    },
                     "Ocurrio un error",
                     showDialog.value
                 )
@@ -180,7 +187,8 @@ fun CreateNewIngredientScreen(
             SaveResource.Success -> DialogSuccess(
                 {
                     showDialog.value = false
-                additionalIngredientViewModel.resetSaveState()},
+                    additionalIngredientViewModel.resetSaveState()
+                },
                 "Guadardo con exito!",
                 showDialog.value
             )

@@ -52,11 +52,12 @@ import java.math.BigDecimal
 @Composable
 fun CreateNewDessertScreen(
     dessertViewModel: DessertViewModel = hiltViewModel(),
-    imageViewModel: SaveImageViewModel = hiltViewModel()) {
+    imageViewModel: SaveImageViewModel = hiltViewModel()
+) {
     val nameState = remember { mutableStateOf("") }
     val descriptionState = remember { mutableStateOf("") }
-    val unitAvailableState = remember { mutableIntStateOf(0) }
-    val priceState = remember { mutableStateOf(BigDecimal.ZERO) }
+    val unitAvailableState = remember { mutableStateOf("") }
+    val priceState = remember { mutableStateOf("") }
 
     val saveUiState by dessertViewModel.saveUiState.collectAsStateWithLifecycle()
 
@@ -91,7 +92,9 @@ fun CreateNewDessertScreen(
 
 
             Column(
-                modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 OutlinedTextField(
@@ -107,12 +110,10 @@ fun CreateNewDessertScreen(
                 )
 
                 OutlinedTextField(
-                    value = unitAvailableState.intValue.toString(),
+                    value = unitAvailableState.value,
                     onValueChange = {
-                        if(it.isNotEmpty()){
-                            unitAvailableState.intValue = it.toInt()
-                        }else{
-                            unitAvailableState.intValue = 0
+                        if (it.isDigitsOnly() || it.isEmpty()) {
+                            unitAvailableState.value = it
                         }
                     },
                     label = { Text(text = "Unidades disponibles") },
@@ -122,38 +123,32 @@ fun CreateNewDessertScreen(
                 OutlinedTextField(
                     value = priceState.value.toString(),
                     onValueChange = {
-                        if(it.isNotEmpty()){
-                            priceState.value = it.toBigDecimal()
-                        } else{
-                            priceState.value = BigDecimal.ZERO
-                        }
+                        priceState.value = it
                     },
                     label = { Text(text = "Precio unitario del postre") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                 )
 
 
-                    // Mostrar la imagen (usando Coil)
+                // Mostrar la imagen (usando Coil)
                 imageViewModel.temporaryImageUri.let { uri ->
                     AsyncImage(
                         model = uri, // Si ya se guardó, usa el path; si no, la URI temporal
                         contentDescription = "Imagen seleccionada",
-                        modifier = Modifier.size(200.dp).clip(RoundedCornerShape(8.dp)),
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clip(RoundedCornerShape(8.dp)),
                         contentScale = ContentScale.Crop
                     )
                 }
 
 
-                    Button(onClick = {
-                        launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                    }) {
-                        Text("Seleccionar Imagen")
-                    }
-
-
-
+                Button(onClick = {
+                    launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }) {
+                    Text("Seleccionar Imagen")
+                }
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Button(
                     onClick = {
 
@@ -163,19 +158,16 @@ fun CreateNewDessertScreen(
                             dessertViewModel.saveNewDessert(
                                 nameState.value,
                                 descriptionState.value,
-                                unitAvailableState.intValue,
-                                priceState.value,
+                                unitAvailableState.value.toIntOrNull() ?: 0,
+                                priceState.value.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                                 imagePath
-                                )
+                            )
                         }
-
                     }
                 ) {
                     Text(text = "Guardar este nuevo postre")
                 }
             }
-
-
         }
         when (val resource = saveUiState.saveUiResource) {
             SaveResource.Idle -> {}
