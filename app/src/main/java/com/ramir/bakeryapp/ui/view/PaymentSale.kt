@@ -1,5 +1,6 @@
 package com.ramir.bakeryapp.ui.view
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,10 +14,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,7 +46,8 @@ import java.math.BigDecimal
 @Composable
 fun PaymentSaleScreen(
     cartViewModel: CartViewModel = hiltViewModel(),
-    navigateToSales: () -> Unit) {
+    navigateToSales: () -> Unit
+) {
     val cartList by cartViewModel.cart.collectAsStateWithLifecycle()
     val saveUiState by cartViewModel.saveUiState.collectAsStateWithLifecycle()
     var quantityPaid by rememberSaveable { mutableStateOf(BigDecimal.ZERO) }
@@ -53,31 +59,38 @@ fun PaymentSaleScreen(
     var customerLastname by rememberSaveable { mutableStateOf("") }
     var customerPhone by rememberSaveable { mutableStateOf("") }
     var showQuantityMessageError by rememberSaveable { mutableStateOf(false) }
+    var prevItemTitle by rememberSaveable { mutableStateOf("") }
+    var currentDessert by rememberSaveable { mutableStateOf("") }
+    var totalToPay by rememberSaveable { mutableStateOf(BigDecimal.ZERO) }
 
     Scaffold(
         topBar = { BakeryTopAppBar("Confirmar pago") }
     ) { paddingValues ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
             when (val resource = cartList.cartList) {
                 is Resource.Error -> DialogError({}, resource.message)
                 Resource.Loading -> LoadingProgress()
                 is Resource.Success<List<CartItemDetails>> -> {
-                    val totalToPay = remember(resource.data) {
-                        derivedStateOf {
-                            resource.data.fold(BigDecimal.ZERO) { acc, item ->
-                                acc.add(item.cartItem.total)
+                    LaunchedEffect(Unit) {
+                        resource.data.forEach {
+                            if (currentDessert != it.cartItem.dessertItemNumber) {
+                                totalToPay += it.dessert.price
+                                currentDessert = it.cartItem.dessertItemNumber
                             }
+                            totalToPay += it.cartItem.total
                         }
                     }
                     PaymentSaleContentent(
                         resource.data,
-                        totalToPay.value,
+                        totalToPay,
                         quantityPaid.toString(),
                         {
                             quantityPaid = it
-                            changeToReturn = totalToPay.value - quantityPaid
+                            changeToReturn = totalToPay - quantityPaid
                         },
                         changeToReturn.toString(),
                         customerName,
@@ -101,7 +114,7 @@ fun PaymentSaleScreen(
                                 showQuantityMessageError = true
                             }
                         },
-                        onUnsavePurchase= {
+                        onUnsavePurchase = {
                             cartViewModel.deleteCurrentCart()
                             navigateToSales()
                         }
@@ -146,81 +159,90 @@ fun PaymentSaleContentent(
     onCustomerPhone: (String) -> Unit,
     showQuantityMessageError: Boolean,
     onConfirmPurchase: () -> Unit,
-    onUnsavePurchase: () -> Unit
+    onUnsavePurchase: () -> Unit,
 ) {
 
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         Row {
-            Text(text = "Postre", modifier = Modifier.weight(1f))
-            Text(text = "Precio del Postre", modifier = Modifier.weight(1f))
-            Text(text = "Ingrediente", modifier = Modifier.weight(1f))
-            Text(text = "Precio del ingrediente", modifier = Modifier.weight(1f))
-            Text(text = "Cantidad de ingrediente", modifier = Modifier.weight(1f))
-            Text(text = "Costo", modifier = Modifier.weight(1f))
+            Text(text = "Producto", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+            Text(text = "Unidades", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+            Text(text = "Precio unitario", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
         }
-        var prevItemTitle = ""
+        var currentDessertItem = ""
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
             itemsIndexed(cartList) { index, item ->
-                Row {
-                    if(prevItemTitle != item.cartItem.dessertItemNumber){
-                        Text(text = item.dessert.name, modifier = Modifier.weight(5f))
-
-                        Text(text = item.dessert.price.toString(), modifier = Modifier.weight(1f))
-                    }else{
-                        Text("",modifier = Modifier.weight(1f))
+                if (currentDessertItem != item.cartItem.dessertItemNumber) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(horizontalArrangement = Arrangement.SpaceAround) {
+                        Text(text = item.dessert.name, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                        Text(text = "1", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                        Text(
+                            text = item.dessert.price.toString(),
+                            modifier = Modifier.weight(1f)
+                            , textAlign = TextAlign.Center
+                        )
                     }
-                    prevItemTitle = item.cartItem.dessertItemNumber
-                    Text(text = item.dessert.price.toString(), modifier = Modifier.weight(1f))
-                    Text(text = item.additionalIngredient.name, modifier = Modifier.weight(1f))
-                    Text(
-                        text = item.additionalIngredient.price.toString(),
-                        modifier = Modifier.weight(1f)
-                    )
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                    currentDessertItem = item.cartItem.dessertItemNumber
+
+                }
+                //Text(text = item.dessert.price.toString(), modifier = Modifier.weight(1f))
+                Row(horizontalArrangement = Arrangement.SpaceAround) {
+                    Text(text = item.additionalIngredient.name, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
                     Text(
                         text = item.cartItem.additionalIngredientQuantity.toString(),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f), textAlign = TextAlign.Center
                     )
-                    Text(text = item.cartItem.total.toString(), modifier = Modifier.weight(1f))
+                    Text(
+                        text = item.additionalIngredient.price.toString(),
+                        modifier = Modifier.weight(1f), textAlign = TextAlign.Center
+                    )
                 }
+
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
             }
             item {
-                Text(text = "Total: $$totalToPay")
-                OutlinedTextField(
-                    value = quantityPaid,
-                    onValueChange = { onQuantityPaid(it.toBigDecimal()) },
-                    label = { Text("Ingrese la cantidad") }
-                )
-                Text("Cambio a regresar al cliente:  $$changeToReturn")
-                if (showQuantityMessageError) {
-                    Text("La cantidad ingresada no puede ser menor al total")
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(text = "Total: $$totalToPay",textAlign = TextAlign.End)
+                    OutlinedTextField(
+                        value = quantityPaid,
+                        onValueChange = { onQuantityPaid(it.toBigDecimal()) },
+                        label = { Text("Ingrese la cantidad") }
+                    )
+                    Text("Cambio a regresar al cliente:  $$changeToReturn")
+                    if (showQuantityMessageError) {
+                        Text("La cantidad ingresada no puede ser menor al total")
+                    }
+
+                    OutlinedTextField(
+                        value = customerName,
+                        onValueChange = { onCustomerName(it) },
+                        label = { Text("Nombre del cliente") }
+                    )
+
+                    OutlinedTextField(
+                        value = customerLastname,
+                        onValueChange = { onCustomerLastname(it) },
+                        label = { Text("Apellidos del cliente") }
+                    )
+
+                    OutlinedTextField(
+                        value = customerPhone,
+                        onValueChange = { onCustomerPhone(it) },
+                        label = { Text("Numero de telefono") }
+                    )
+                    Button(onClick = onConfirmPurchase) {
+                        Text("Confirmar compra")
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(onClick = onUnsavePurchase) {
+                        Text("Salir sin guardar compra")
+                    }
                 }
 
-                OutlinedTextField(
-                    value = customerName,
-                    onValueChange = { onCustomerName(it) },
-                    label = { Text("Nombre del cliente") }
-                )
-
-                OutlinedTextField(
-                    value = customerLastname,
-                    onValueChange = { onCustomerLastname(it) },
-                    label = { Text("Apellidos del cliente") }
-                )
-
-                OutlinedTextField(
-                    value = customerPhone,
-                    onValueChange = { onCustomerPhone(it) },
-                    label = { Text("Numero de telefono") }
-                )
-                Button(onClick = onConfirmPurchase) {
-                    Text("Confirmar compra")
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = onUnsavePurchase){
-                    Text("Salir sin guardar compra")
-                }
             }
         }
     }

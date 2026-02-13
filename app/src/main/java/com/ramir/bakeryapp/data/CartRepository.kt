@@ -46,8 +46,13 @@ class CartRepository @Inject constructor(
         var total = BigDecimal.ZERO
         val orderList = mutableListOf<OrderDessertEntity>()
         val dessertIngredientIdList = mutableListOf<Int>()
+        var dessertItem = ""
 
         cartList.forEach {
+            if(dessertItem != it.cartItem.dessertItemNumber){
+                dessertItem = it.cartItem.dessertItemNumber
+                total += it.dessert.price
+            }
             val diEntity = DessertAdditionalIngredientEntity(0, it.dessert.id, it.additionalIngredient.id, it.cartItem.additionalIngredientQuantity, it.cartItem.dessertItemNumber)
             val dessertIngredientId = dessertAdditionalIngredientDao.insertDessertAdditionalIgredient(diEntity)
             total += it.cartItem.total
