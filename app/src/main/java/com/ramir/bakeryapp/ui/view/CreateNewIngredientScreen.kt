@@ -78,7 +78,7 @@ fun CreateNewIngredientScreen(
     }
 
     Scaffold(
-        topBar = { BakeryTopAppBar("Crear Nuevo Ingrediente") }
+        topBar = { BakeryTopAppBar("Crear Nuevo Ingrediente Adicional") }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -93,13 +93,13 @@ fun CreateNewIngredientScreen(
                 OutlinedTextField(
                     value = nameState.value,
                     onValueChange = { nameState.value = it },
-                    label = { Text(text = "Nombre del postre") }
+                    label = { Text(text = "Nombre del ingrediente") }
                 )
 
                 OutlinedTextField(
                     value = descriptionState.value,
                     onValueChange = { descriptionState.value = it },
-                    label = { Text(text = "Descripcion del postre") }
+                    label = { Text(text = "Descripcion del ingrediente") }
                 )
 
                 OutlinedTextField(
@@ -118,7 +118,7 @@ fun CreateNewIngredientScreen(
                     onValueChange = {
                         priceState.value = it
                     },
-                    label = { Text(text = "Precio unitario del postre") },
+                    label = { Text(text = "Precio unitario del ingrediente") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                 )
 

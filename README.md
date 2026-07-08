@@ -3,10 +3,11 @@
 This is an android application developed in Kotlin. This app provides functionalities to handle desserts, additional ingredients, sales.
 
 ## Requirements
-``
+
 To execute this app locally, you will need the following:
 
 - [Android Studio](https://developer.android.com/studio) the lastest version
+
 
 ## Installation
 

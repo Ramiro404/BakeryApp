@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,7 +69,7 @@ private fun DessertList(dessertList: List<Dessert>){
             Text(text = "Imagen", modifier  = Modifier.weight(1f))
             Text(text = "Nombre", modifier  = Modifier.weight(1f))
             Text(text = "Unidades", modifier  = Modifier.weight(1f), overflow = TextOverflow.Ellipsis)
-            Text(text = "Descripcion", modifier  = Modifier.weight(2f))
+            //Text(text = "Descripcion", modifier  = Modifier.weight(2f))
             Text(text = "Precio", modifier  = Modifier.weight(1f), overflow = TextOverflow.Ellipsis)
         }
         HorizontalDivider(thickness = 2.dp)
@@ -94,8 +95,8 @@ private fun DessertItem(
             contentScale = ContentScale.Crop
         )
         Text(text = dessert.name, modifier  = Modifier.weight(1f).padding(start = 8.dp))
-        Text(text = dessert.unitAvailable.toString(), modifier  = Modifier.weight(1f))
-        Text(text = dessert.description, modifier  = Modifier.weight(1f))
+        Text(text = dessert.unitAvailable.toString(), modifier  = Modifier.weight(1f), textAlign = TextAlign.Center)
+        //Text(text = dessert.description, modifier  = Modifier.weight(1f))
         Text(text = "$ ${dessert.price.toString()}", modifier  = Modifier.weight(1f))
     }
     HorizontalDivider(thickness = 2.dp)
