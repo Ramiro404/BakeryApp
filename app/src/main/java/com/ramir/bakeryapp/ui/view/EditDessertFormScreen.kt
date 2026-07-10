@@ -1,4 +1,4 @@
-package com.ramir.bakeryapp.ui.view
+    package com.ramir.bakeryapp.ui.view
 
 import android.net.Uri
 import android.util.Log
