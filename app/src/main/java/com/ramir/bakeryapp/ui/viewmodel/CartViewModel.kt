@@ -57,7 +57,6 @@ class CartViewModel @Inject constructor(
     }
 
      fun postCart(id:Int, dessertId:Int, additionalIngredientId: Int, additionalIngredientQuantity:Int, total: BigDecimal, dessertItemNumber: String){
-         val anErrorVal:String = 1
         _saveUiState.update { it.copy(saveUiResource = SaveResource.Loading) }
         val cart = Cart(id,dessertId,additionalIngredientId,additionalIngredientQuantity, total, dessertItemNumber, 0)
         viewModelScope.launch {
