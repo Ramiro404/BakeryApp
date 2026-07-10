@@ -10,6 +10,7 @@ android {
     namespace = "com.ramir.bakeryapp"
     compileSdk {
         version = release(36)
+        // 36
     }
 
     defaultConfig {
